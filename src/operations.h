@@ -4,57 +4,92 @@
 #include <map>
 
 #include "opcodes.h"
+#include "call_context.h"
 
-class CallContext;
+enum ExecStatus {
+  CONTINUE,
+  STOPEXEC // TODO: rename to STOP
+};
 
 class Operation {
 public:
-  virtual void execute(CallContext&) = 0;
+  virtual ExecStatus execute(CallContext&) = 0;
 };
 
 using JumpTable = std::map<Opcode, Operation*>; // TODO: use array instead of map since opcodes are contiguous uint8_t?
 
 class StopOperation : public Operation {
 public:
-  void execute(CallContext&) override;
+  ExecStatus execute(CallContext&) override;
 };
 
 class AddOperation : public Operation {
 public:
-  void execute(CallContext&) override;
+  ExecStatus execute(CallContext&) override;
 };
 
 class MulOperation : public Operation {
 public:
-  void execute(CallContext&) override;
+  ExecStatus execute(CallContext&) override;
 };
 
 class SubOperation : public Operation {
 public:
-  void execute(CallContext&) override;
+  ExecStatus execute(CallContext&) override;
 };
 
-void StopOperation::execute(CallContext&) {
-  std::cout << "STOP" << std::endl;
+class Push1Operation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+ExecStatus StopOperation::execute(CallContext&) {
+  return STOPEXEC;
 }
 
-void AddOperation::execute(CallContext&) {
-  std::cout << "ADD" << std::endl;
+ExecStatus AddOperation::execute(CallContext& context) {
+  uint256 x = context.getStack()->pop();
+  uint256& y = context.getStack()->peek();
+  y += x;
+
+  return CONTINUE;
 }
 
-void MulOperation::execute(CallContext&) {
-  std::cout << "MUL" << std::endl;
+ExecStatus MulOperation::execute(CallContext& context) {
+  uint256 x = context.getStack()->pop();
+  uint256& y = context.getStack()->peek();
+  y *= x;
+
+  return CONTINUE;
 }
 
-void SubOperation::execute(CallContext&) {
-  std::cout << "SUB" << std::endl;
+ExecStatus SubOperation::execute(CallContext& context) {
+  uint256 x = context.getStack()->pop();
+  uint256& y = context.getStack()->peek();
+  y -= x;
+
+  return CONTINUE;
+}
+
+ExecStatus Push1Operation::execute(CallContext& context) {
+  uint64_t codeLen = context.getContract()->getBytecodeSize();
+  context.incPc();
+
+  if (context.getPc() < codeLen) {
+    context.getStack()->push(context.getContract()->getBytecodeAt(context.getPc()));
+  } else {
+    context.getStack()->push(0);
+  }
+
+  return CONTINUE;
 }
 
 JumpTable jumpTable = {
   {Opcode::STOP, new StopOperation()},
   {Opcode::ADD, new AddOperation()},
   {Opcode::MUL, new MulOperation()},
-  {Opcode::SUB, new SubOperation()}
+  {Opcode::SUB, new SubOperation()},
+  {Opcode::PUSH1, new Push1Operation()}
 };
 
 Operation* getOperation(Opcode opcode) {

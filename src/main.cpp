@@ -8,7 +8,7 @@ using bytes = std::basic_string<uint8_t>;
 int main()
 {
     // Create the contract
-    bytes bytecode = {0x00, 0x01, 0x02, 0x03};
+    bytes bytecode = {Opcode::PUSH1, 0x05, Opcode::PUSH1, 0x12, Opcode::ADD, Opcode::PUSH1, 0x02, Opcode::MUL, Opcode::PUSH1, 0x0a, Opcode::SUB, Opcode::STOP};
     std::shared_ptr<Contract> contract = std::make_shared<Contract>(bytecode);
 
     // Create a call context

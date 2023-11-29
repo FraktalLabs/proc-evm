@@ -19,7 +19,7 @@ public:
   void incPc() { pc++; }
 
   std::shared_ptr<Contract> getContract() { return contract; }
-  std::unique_ptr<Stack> getStack() { return std::move(stack); } // TODO?
+  std::shared_ptr<Stack> getStack() { return stack; } // TODO?
   std::shared_ptr<Memory> getMemory() { return memory; }
 
   void run(); // TODO: return value?
@@ -28,6 +28,6 @@ private:
   uint64_t pc;
 
   std::shared_ptr<Contract> contract;
-  std::unique_ptr<Stack> stack; // TODO: shared or unique?
+  std::shared_ptr<Stack> stack; // TODO: shared or unique?
   std::shared_ptr<Memory> memory;
 };

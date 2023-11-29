@@ -6,7 +6,8 @@ std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::STOP, "STOP"},
     {Opcode::ADD, "ADD"},
     {Opcode::MUL, "MUL"},
-    {Opcode::SUB, "SUB"}
+    {Opcode::SUB, "SUB"},
+    {Opcode::PUSH1, "PUSH1"}
 };
 
 std::string opcodeToString(Opcode opcode) {
