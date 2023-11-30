@@ -53,6 +53,12 @@ public:
   ExecStatus execute(CallContext&) override;
 };
 
+template <uint8_t N>
+class PushNOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
 class JumpOperation : public Operation {
 public:
   ExecStatus execute(CallContext&) override;
@@ -121,6 +127,32 @@ ExecStatus Push1Operation::execute(CallContext& context) {
   return CONTINUE;
 }
 
+template <uint8_t N>
+ExecStatus PushNOperation<N>::execute(CallContext& context) {
+  uint64_t codeLen = context.getContract()->getBytecodeSize();
+
+  uint64_t start = codeLen;
+  if (context.getPc() + 1 < codeLen) {
+    start = context.getPc() + 1;
+  }
+
+  // TODO: wouldn't this cause a bug at end of code?
+  uint64_t end = codeLen;
+  if (start + N < codeLen) {
+    end = start + N;
+  }
+
+  uint256 value = 0;
+  for (uint64_t i = start; i < end; i++) {
+    value = (value << 8) + context.getContract()->getBytecodeAt(i);
+  }
+
+  context.setPc(context.getPc() + N);
+  context.getStack()->push(value);
+
+  return CONTINUE;
+}
+
 ExecStatus JumpOperation::execute(CallContext& context) {
   uint256 jumpDest = context.getStack()->pop();
   // TODO: jump to 0?
@@ -144,9 +176,40 @@ JumpTable jumpTable = {
   {Opcode::SUB, new SubOperation()},
   {Opcode::MSTORE, new MstoreOperation()},
   {Opcode::MLOAD, new MloadOperation()},
-  {Opcode::PUSH1, new Push1Operation()},
   {Opcode::JUMP, new JumpOperation()},
-  {Opcode::JUMPDEST, new JumpdestOperation()}
+  {Opcode::JUMPDEST, new JumpdestOperation()},
+  {Opcode::PUSH1, new Push1Operation()},
+  {Opcode::PUSH2, new PushNOperation<2>()},
+  {Opcode::PUSH3, new PushNOperation<3>()},
+  {Opcode::PUSH4, new PushNOperation<4>()},
+  {Opcode::PUSH5, new PushNOperation<5>()},
+  {Opcode::PUSH6, new PushNOperation<6>()},
+  {Opcode::PUSH7, new PushNOperation<7>()},
+  {Opcode::PUSH8, new PushNOperation<8>()},
+  {Opcode::PUSH9, new PushNOperation<9>()},
+  {Opcode::PUSH10, new PushNOperation<10>()},
+  {Opcode::PUSH11, new PushNOperation<11>()},
+  {Opcode::PUSH12, new PushNOperation<12>()},
+  {Opcode::PUSH13, new PushNOperation<13>()},
+  {Opcode::PUSH14, new PushNOperation<14>()},
+  {Opcode::PUSH15, new PushNOperation<15>()},
+  {Opcode::PUSH16, new PushNOperation<16>()},
+  {Opcode::PUSH17, new PushNOperation<17>()},
+  {Opcode::PUSH18, new PushNOperation<18>()},
+  {Opcode::PUSH19, new PushNOperation<19>()},
+  {Opcode::PUSH20, new PushNOperation<20>()},
+  {Opcode::PUSH21, new PushNOperation<21>()},
+  {Opcode::PUSH22, new PushNOperation<22>()},
+  {Opcode::PUSH23, new PushNOperation<23>()},
+  {Opcode::PUSH24, new PushNOperation<24>()},
+  {Opcode::PUSH25, new PushNOperation<25>()},
+  {Opcode::PUSH26, new PushNOperation<26>()},
+  {Opcode::PUSH27, new PushNOperation<27>()},
+  {Opcode::PUSH28, new PushNOperation<28>()},
+  {Opcode::PUSH29, new PushNOperation<29>()},
+  {Opcode::PUSH30, new PushNOperation<30>()},
+  {Opcode::PUSH31, new PushNOperation<31>()},
+  {Opcode::PUSH32, new PushNOperation<32>()}
 };
 
 Operation* getOperation(Opcode opcode) {
