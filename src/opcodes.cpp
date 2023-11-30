@@ -7,6 +7,8 @@ std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::ADD, "ADD"},
     {Opcode::MUL, "MUL"},
     {Opcode::SUB, "SUB"},
+    {Opcode::JUMP, "JUMP"},
+    {Opcode::JUMPDEST, "JUMPDEST"},
     {Opcode::MSTORE, "MSTORE"},
     {Opcode::MLOAD, "MLOAD"},
     {Opcode::PUSH1, "PUSH1"}

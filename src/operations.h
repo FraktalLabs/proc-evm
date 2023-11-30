@@ -53,6 +53,16 @@ public:
   ExecStatus execute(CallContext&) override;
 };
 
+class JumpOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class JumpdestOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
 ExecStatus StopOperation::execute(CallContext&) {
   return STOPEXEC;
 }
@@ -111,6 +121,22 @@ ExecStatus Push1Operation::execute(CallContext& context) {
   return CONTINUE;
 }
 
+ExecStatus JumpOperation::execute(CallContext& context) {
+  uint256 jumpDest = context.getStack()->pop();
+  // TODO: jump to 0?
+  if(!(context.getContract()->getBytecodeAt(static_cast<uint64_t>(jumpDest)) == Opcode::JUMPDEST)) {
+    std::cout << "Invalid jump destination at dest : " << to_string(jumpDest, 10) << " operation : " << opcodeToString(context.getContract()->getOpcodeAt(static_cast<uint64_t>(jumpDest))) << std::endl;
+    return STOPEXEC;
+  }
+  context.setPc(static_cast<uint64_t>(jumpDest) - 1); // -1 because pc is incremented after each instruction
+
+  return CONTINUE;
+}
+
+ExecStatus JumpdestOperation::execute(CallContext& context) {
+  return CONTINUE;
+}
+
 JumpTable jumpTable = {
   {Opcode::STOP, new StopOperation()},
   {Opcode::ADD, new AddOperation()},
@@ -118,7 +144,9 @@ JumpTable jumpTable = {
   {Opcode::SUB, new SubOperation()},
   {Opcode::MSTORE, new MstoreOperation()},
   {Opcode::MLOAD, new MloadOperation()},
-  {Opcode::PUSH1, new Push1Operation()}
+  {Opcode::PUSH1, new Push1Operation()},
+  {Opcode::JUMP, new JumpOperation()},
+  {Opcode::JUMPDEST, new JumpdestOperation()}
 };
 
 Operation* getOperation(Opcode opcode) {
