@@ -38,6 +38,16 @@ public:
   ExecStatus execute(CallContext&) override;
 };
 
+class MstoreOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class MloadOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
 class Push1Operation : public Operation {
 public:
   ExecStatus execute(CallContext&) override;
@@ -71,6 +81,23 @@ ExecStatus SubOperation::execute(CallContext& context) {
   return CONTINUE;
 }
 
+ExecStatus MstoreOperation::execute(CallContext& context) {
+  uint256 memStart = context.getStack()->pop();
+  uint256 value = context.getStack()->pop();
+  context.getMemory()->store32(static_cast<uint64_t>(memStart), static_cast<uint32_t>(value));
+
+  return CONTINUE;
+}
+
+ExecStatus MloadOperation::execute(CallContext& context) {
+  uint256& value = context.getStack()->peek();
+  uint64_t offset = static_cast<uint64_t>(value);
+  uint256 memValue = context.getMemory()->load32(offset);
+  value = memValue;
+
+  return CONTINUE;
+}
+
 ExecStatus Push1Operation::execute(CallContext& context) {
   uint64_t codeLen = context.getContract()->getBytecodeSize();
   context.incPc();
@@ -89,6 +116,8 @@ JumpTable jumpTable = {
   {Opcode::ADD, new AddOperation()},
   {Opcode::MUL, new MulOperation()},
   {Opcode::SUB, new SubOperation()},
+  {Opcode::MSTORE, new MstoreOperation()},
+  {Opcode::MLOAD, new MloadOperation()},
   {Opcode::PUSH1, new Push1Operation()}
 };
 

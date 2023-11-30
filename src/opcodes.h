@@ -10,7 +10,10 @@ enum Opcode : uint8_t {
   MUL = 0x02,
   SUB = 0x03,
 
-  PUSH1 = 0x04
+  MSTORE = 0x04,
+  MLOAD = 0x05,
+
+  PUSH1 = 0x06
 };
 
 std::string opcodeToString(Opcode opcode);

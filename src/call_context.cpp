@@ -8,7 +8,8 @@ void CallContext::run() {
     // Print the current state
     std::cout << "\nState at pc: " << pc << std::endl;
     std::cout << "  opcode: " << contract->getBytecodeStringAt(pc) << " - " << opcodeToString(contract->getOpcodeAt(pc)) << std::endl;
-    std::cout << "  stack:\n" << stack->toString() << std::endl;
+    std::cout << "  stack: " << stack->toString() << std::endl;
+    std::cout << "  memory: " << memory->toString() << std::endl;
 
     // Get the opcode
     Opcode opcode = contract->getOpcodeAt(pc);
@@ -17,7 +18,9 @@ void CallContext::run() {
     // Execute the operation
     ExecStatus status = operation->execute(*this);
 
-    std::cout << "  new stack:\n" << stack->toString() << std::endl;
+    std::cout << "  ---- Executed ----" << std::endl;
+    std::cout << "  new stack: " << stack->toString() << std::endl;
+    std::cout << "  new memory: " << memory->toString() << std::endl;
 
     if(status == ExecStatus::STOPEXEC) {
       std::cout << "Received STOP" << std::endl;
