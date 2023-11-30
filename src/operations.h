@@ -59,6 +59,12 @@ public:
   ExecStatus execute(CallContext&) override;
 };
 
+template <uint8_t N>
+class DupNOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
 class JumpOperation : public Operation {
 public:
   ExecStatus execute(CallContext&) override;
@@ -153,6 +159,13 @@ ExecStatus PushNOperation<N>::execute(CallContext& context) {
   return CONTINUE;
 }
 
+template <uint8_t N>
+ExecStatus DupNOperation<N>::execute(CallContext& context) {
+  context.getStack()->dup(N);
+
+  return CONTINUE;
+}
+
 ExecStatus JumpOperation::execute(CallContext& context) {
   uint256 jumpDest = context.getStack()->pop();
   // TODO: jump to 0?
@@ -209,7 +222,23 @@ JumpTable jumpTable = {
   {Opcode::PUSH29, new PushNOperation<29>()},
   {Opcode::PUSH30, new PushNOperation<30>()},
   {Opcode::PUSH31, new PushNOperation<31>()},
-  {Opcode::PUSH32, new PushNOperation<32>()}
+  {Opcode::PUSH32, new PushNOperation<32>()},
+  {Opcode::DUP1, new DupNOperation<1>()},
+  {Opcode::DUP2, new DupNOperation<2>()},
+  {Opcode::DUP3, new DupNOperation<3>()},
+  {Opcode::DUP4, new DupNOperation<4>()},
+  {Opcode::DUP5, new DupNOperation<5>()},
+  {Opcode::DUP6, new DupNOperation<6>()},
+  {Opcode::DUP7, new DupNOperation<7>()},
+  {Opcode::DUP8, new DupNOperation<8>()},
+  {Opcode::DUP9, new DupNOperation<9>()},
+  {Opcode::DUP10, new DupNOperation<10>()},
+  {Opcode::DUP11, new DupNOperation<11>()},
+  {Opcode::DUP12, new DupNOperation<12>()},
+  {Opcode::DUP13, new DupNOperation<13>()},
+  {Opcode::DUP14, new DupNOperation<14>()},
+  {Opcode::DUP15, new DupNOperation<15>()},
+  {Opcode::DUP16, new DupNOperation<16>()},
 };
 
 Operation* getOperation(Opcode opcode) {

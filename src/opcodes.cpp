@@ -43,7 +43,24 @@ std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::PUSH29, "PUSH29"},
     {Opcode::PUSH30, "PUSH30"},
     {Opcode::PUSH31, "PUSH31"},
-    {Opcode::PUSH32, "PUSH32"}
+    {Opcode::PUSH32, "PUSH32"},
+
+    {Opcode::DUP1, "DUP1"},
+    {Opcode::DUP2, "DUP2"},
+    {Opcode::DUP3, "DUP3"},
+    {Opcode::DUP4, "DUP4"},
+    {Opcode::DUP5, "DUP5"},
+    {Opcode::DUP6, "DUP6"},
+    {Opcode::DUP7, "DUP7"},
+    {Opcode::DUP8, "DUP8"},
+    {Opcode::DUP9, "DUP9"},
+    {Opcode::DUP10, "DUP10"},
+    {Opcode::DUP11, "DUP11"},
+    {Opcode::DUP12, "DUP12"},
+    {Opcode::DUP13, "DUP13"},
+    {Opcode::DUP14, "DUP14"},
+    {Opcode::DUP15, "DUP15"},
+    {Opcode::DUP16, "DUP16"},
 };
 
 std::string opcodeToString(Opcode opcode) {
