@@ -14,6 +14,21 @@ std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::SSTORE, "SSTORE"},
     {Opcode::SLOAD, "SLOAD"},
 
+    {Opcode::ADDRESS, "ADDRESS"},
+    {Opcode::BALANCE, "BALANCE"},
+    {Opcode::ORIGIN, "ORIGIN"},
+    {Opcode::CALLER, "CALLER"},
+
+    {Opcode::GASPRICE, "GASPRICE"},
+
+    {Opcode::BLOCKHASH, "BLOCKHASH"},
+
+    {Opcode::COINBASE, "COINBASE"},
+    {Opcode::TIMESTAMP, "TIMESTAMP"},
+    {Opcode::NUMBER, "NUMBER"},
+    {Opcode::DIFFICULTY, "DIFFICULTY"},
+    {Opcode::GASLIMIT, "GASLIMIT"},
+
     {Opcode::PUSH1, "PUSH1"},
     {Opcode::PUSH2, "PUSH2"},
     {Opcode::PUSH3, "PUSH3"},

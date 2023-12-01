@@ -58,6 +58,61 @@ public:
   ExecStatus execute(CallContext&) override;
 };
 
+class AddressOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class BalanceOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class OriginOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class CallerOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class GaspriceOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class BlockhashOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class CoinbaseOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class TimestampOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class NumberOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class DifficultyOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class GaslimitOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
 class Push1Operation : public Operation {
 public:
   ExecStatus execute(CallContext&) override;
@@ -150,6 +205,92 @@ ExecStatus SloadOperation::execute(CallContext& context) {
   return CONTINUE;
 }
 
+ExecStatus AddressOperation::execute(CallContext& context) {
+  std::string addrStr = context.getContract()->getAddressString();
+  uint256 addr = intx::from_string<uint256>(addrStr);
+  context.getStack()->push(addr);
+
+  return CONTINUE;
+}
+
+ExecStatus BalanceOperation::execute(CallContext& context) {
+  std::string addrStr = context.getContract()->getAddressString();
+  Account* account = context.getState()->getAccount(addrStr);
+  uint256 balance = account->getBalance();
+  context.getStack()->push(balance);
+
+  return CONTINUE;
+}
+
+ExecStatus OriginOperation::execute(CallContext& context) {
+  std::string addrStr = context.getTxContext()->getOriginString();
+  uint256 addr = intx::from_string<uint256>(addrStr);
+  context.getStack()->push(addr);
+
+  return CONTINUE;
+}
+
+ExecStatus CallerOperation::execute(CallContext& context) {
+  std::string addrStr = context.getCallerString();
+  uint256 addr = intx::from_string<uint256>(addrStr);
+  context.getStack()->push(addr);
+
+  return CONTINUE;
+}
+
+ExecStatus GaspriceOperation::execute(CallContext& context) {
+  uint256 gasPrice = context.getTxContext()->getGasPrice();
+  context.getStack()->push(gasPrice);
+
+  return CONTINUE;
+}
+
+ExecStatus BlockhashOperation::execute(CallContext& context) {
+  uint256 block = context.getStack()->peek();
+  // TODO: Get block data & check range / ...
+  //       For now using current block hash
+  uint256 blockHash = context.getBlockContext()->getBlockHash();
+  block = blockHash;
+
+  return CONTINUE;
+}
+
+ExecStatus CoinbaseOperation::execute(CallContext& context) {
+  std::string coinbase = context.getBlockContext()->getCoinbaseString();
+  uint256 addr = intx::from_string<uint256>(coinbase);
+  context.getStack()->push(addr);
+
+  return CONTINUE;
+}
+
+ExecStatus GaslimitOperation::execute(CallContext& context) {
+  uint256 gasLimit = context.getBlockContext()->getGasLimit();
+  context.getStack()->push(gasLimit);
+
+  return CONTINUE;
+}
+
+ExecStatus DifficultyOperation::execute(CallContext& context) {
+  uint256 difficulty = context.getBlockContext()->getDifficulty();
+  context.getStack()->push(difficulty);
+
+  return CONTINUE;
+}
+
+ExecStatus NumberOperation::execute(CallContext& context) {
+  uint256 number = context.getBlockContext()->getNumber();
+  context.getStack()->push(number);
+
+  return CONTINUE;
+}
+
+ExecStatus TimestampOperation::execute(CallContext& context) {
+  uint256 timestamp = context.getBlockContext()->getTimestamp();
+  context.getStack()->push(timestamp);
+
+  return CONTINUE;
+}
+
 ExecStatus Push1Operation::execute(CallContext& context) {
   uint64_t codeLen = context.getContract()->getBytecodeSize();
   context.incPc();
@@ -223,6 +364,17 @@ JumpTable jumpTable = {
   {Opcode::SLOAD, new SloadOperation()},
   {Opcode::JUMP, new JumpOperation()},
   {Opcode::JUMPDEST, new JumpdestOperation()},
+  {Opcode::ADDRESS, new AddressOperation()},
+  {Opcode::BALANCE, new BalanceOperation()},
+  {Opcode::ORIGIN, new OriginOperation()},
+  {Opcode::CALLER, new CallerOperation()},
+  {Opcode::GASPRICE, new GaspriceOperation()},
+  {Opcode::BLOCKHASH, new BlockhashOperation()},
+  {Opcode::COINBASE, new CoinbaseOperation()},
+  {Opcode::TIMESTAMP, new TimestampOperation()},
+  {Opcode::NUMBER, new NumberOperation()},
+  {Opcode::DIFFICULTY, new DifficultyOperation()},
+  {Opcode::GASLIMIT, new GaslimitOperation()},
   {Opcode::PUSH1, new Push1Operation()},
   {Opcode::PUSH2, new PushNOperation<2>()},
   {Opcode::PUSH3, new PushNOperation<3>()},

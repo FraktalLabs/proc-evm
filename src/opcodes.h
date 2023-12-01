@@ -18,6 +18,20 @@ enum Opcode : uint8_t {
   JUMP = 0x08,
   JUMPDEST = 0x09,
 
+  ADDRESS = 0x30,
+  BALANCE = 0x31,
+  ORIGIN = 0x32,
+  CALLER = 0x33,
+
+  GASPRICE = 0x3a,
+
+  BLOCKHASH = 0x40,
+  COINBASE = 0x41,
+  TIMESTAMP = 0x42,
+  NUMBER = 0x43,
+  DIFFICULTY = 0x44,
+  GASLIMIT = 0x45,
+
   PUSH1 = 0x60,
   PUSH2 = 0x61,
   PUSH3 = 0x62,

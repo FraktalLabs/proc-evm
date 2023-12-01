@@ -34,6 +34,10 @@ public:
     return toHex(bytecode[index]);
   }
 
+  address getAddress() const {
+    return address;
+  }
+
   std::string getAddressString() {
     std::string result;
     for (const auto &byte : address) {
