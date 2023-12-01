@@ -11,6 +11,8 @@ std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::JUMPDEST, "JUMPDEST"},
     {Opcode::MSTORE, "MSTORE"},
     {Opcode::MLOAD, "MLOAD"},
+    {Opcode::SSTORE, "SSTORE"},
+    {Opcode::SLOAD, "SLOAD"},
 
     {Opcode::PUSH1, "PUSH1"},
     {Opcode::PUSH2, "PUSH2"},

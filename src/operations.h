@@ -48,6 +48,16 @@ public:
   ExecStatus execute(CallContext&) override;
 };
 
+class SstoreOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
+class SloadOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
 class Push1Operation : public Operation {
 public:
   ExecStatus execute(CallContext&) override;
@@ -116,6 +126,26 @@ ExecStatus MloadOperation::execute(CallContext& context) {
   uint64_t offset = static_cast<uint64_t>(value);
   uint256 memValue = context.getMemory()->load32(offset);
   value = memValue;
+
+  return CONTINUE;
+}
+
+ExecStatus SstoreOperation::execute(CallContext& context) {
+  uint256 key = context.getStack()->pop();
+  uint256 value = context.getStack()->pop();
+  std::string callAddress = context.getContract()->getAddressString();
+  Account* account = context.getState()->getAccount(callAddress);
+  account->setStorage(key, value);
+
+  return CONTINUE;
+}
+
+ExecStatus SloadOperation::execute(CallContext& context) {
+  uint256& value = context.getStack()->peek();
+  std::string callAddress = context.getContract()->getAddressString();
+  Account* account = context.getState()->getAccount(callAddress);
+  uint256 sValue = context.getState()->getAccount(callAddress)->getStorage(value);
+  value = sValue;
 
   return CONTINUE;
 }
@@ -189,6 +219,8 @@ JumpTable jumpTable = {
   {Opcode::SUB, new SubOperation()},
   {Opcode::MSTORE, new MstoreOperation()},
   {Opcode::MLOAD, new MloadOperation()},
+  {Opcode::SSTORE, new SstoreOperation()},
+  {Opcode::SLOAD, new SloadOperation()},
   {Opcode::JUMP, new JumpOperation()},
   {Opcode::JUMPDEST, new JumpdestOperation()},
   {Opcode::PUSH1, new Push1Operation()},

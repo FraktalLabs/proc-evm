@@ -12,9 +12,11 @@ enum Opcode : uint8_t {
 
   MSTORE = 0x04,
   MLOAD = 0x05,
+  SSTORE = 0x06,
+  SLOAD = 0x07,
 
-  JUMP = 0x06,
-  JUMPDEST = 0x07,
+  JUMP = 0x08,
+  JUMPDEST = 0x09,
 
   PUSH1 = 0x60,
   PUSH2 = 0x61,
