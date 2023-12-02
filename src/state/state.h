@@ -21,6 +21,17 @@ public:
     state[addr] = account;
   }
 
+  void insert(const std::string& addr, const Account& account) {
+    uint8_t keyBytes[20];
+    for (int i = 0; i < 20; i++) {
+      std::string byteStr = addr.substr(i * 2, 2);
+      keyBytes[i] = static_cast<uint8_t>(std::stoi(byteStr, nullptr, 16));
+    }
+    std::array<uint8_t, 20> keyArray;
+    std::copy(keyBytes, keyBytes + 20, keyArray.begin());
+    insert(keyArray, account);
+  }
+
   Account* getAccount(const address& addr) {
     auto it = state.find(addr);
     if (it == state.end()) {

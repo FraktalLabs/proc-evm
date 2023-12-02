@@ -15,6 +15,7 @@ using address = std::array<uint8_t, 20>;
 class Contract {
 public:
   Contract(bytes bytecode) : bytecode(bytecode) {}
+  Contract(bytes bytecode, const std::string& address) : bytecode(bytecode) { setAddress(address); }
   // Contract(std::string bytecode) : bytecode(bytecode.begin(), bytecode.end()) {}
 
   const bytes& getBytecode() const { return bytecode; }

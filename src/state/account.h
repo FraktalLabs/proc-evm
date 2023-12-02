@@ -127,6 +127,19 @@ public:
     storage[key] = value;
   }
 
+  void initAccount(const std::string& bytecode) {
+    // TODO: Run init code?
+    code.clear();
+    for (size_t i = 0; i < bytecode.size(); ++i) {
+      code.push_back(fromHex(bytecode.substr(i, 2)));
+      ++i;
+    }
+  }
+
+  bytes getCode() const {
+    return code;
+  }
+
 private:
   uint64_t nonce;
   intx::uint256 balance;

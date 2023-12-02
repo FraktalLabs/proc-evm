@@ -52,6 +52,7 @@ uint8_t& Memory::operator[](uint64_t index) {
   return memory[index];
 }
 
+// TODO: non-empty memory when 6080604052
 std::string Memory::toString() {
   static uint16_t rowSize = 16;
   std::string result = "";
