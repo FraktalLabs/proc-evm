@@ -81,6 +81,8 @@ enum Opcode : uint8_t {
   DUP14 = 0x8d,
   DUP15 = 0x8e,
   DUP16 = 0x8f,
+
+  CALL = 0xf1,
 };
 
 std::string opcodeToString(Opcode opcode);

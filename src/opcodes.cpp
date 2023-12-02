@@ -78,6 +78,8 @@ std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::DUP14, "DUP14"},
     {Opcode::DUP15, "DUP15"},
     {Opcode::DUP16, "DUP16"},
+
+    {Opcode::CALL, "CALL"},
 };
 
 std::string opcodeToString(Opcode opcode) {

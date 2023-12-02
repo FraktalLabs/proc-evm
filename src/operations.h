@@ -140,6 +140,11 @@ public:
   ExecStatus execute(CallContext&) override;
 };
 
+class CallOperation : public Operation {
+public:
+  ExecStatus execute(CallContext&) override;
+};
+
 ExecStatus StopOperation::execute(CallContext&) {
   return STOPEXEC;
 }
@@ -353,6 +358,33 @@ ExecStatus JumpdestOperation::execute(CallContext& context) {
   return CONTINUE;
 }
 
+ExecStatus CallOperation::execute(CallContext& context) {
+  uint256 gas = context.getStack()->pop();
+  uint256 to = context.getStack()->pop();
+  uint256 value = context.getStack()->pop();
+  uint256 inOffset = context.getStack()->pop();
+  uint256 inSize = context.getStack()->pop();
+  uint256 outOffset = context.getStack()->pop();
+  uint256 outSize = context.getStack()->pop();
+
+  // TODO
+
+  std::shared_ptr<State> state = context.getState();
+  std::string addressStr = intx::to_string(to, 16);
+  Account* account = state->getAccount(addressStr);
+  bytes bytecode = account->getCode();
+  std::shared_ptr<Contract> contract = std::make_shared<Contract>(bytecode, addressStr);
+
+  std::shared_ptr<CallContext> callContext = std::make_shared<CallContext>(contract, 0, state);
+  //TODO: Inherit parts of context
+
+  callContext->run();
+
+  context.getStack()->push(1);
+
+  return CONTINUE;
+}
+
 JumpTable jumpTable = {
   {Opcode::STOP, new StopOperation()},
   {Opcode::ADD, new AddOperation()},
@@ -364,6 +396,7 @@ JumpTable jumpTable = {
   {Opcode::SLOAD, new SloadOperation()},
   {Opcode::JUMP, new JumpOperation()},
   {Opcode::JUMPDEST, new JumpdestOperation()},
+  {Opcode::CALL, new CallOperation()},
   {Opcode::ADDRESS, new AddressOperation()},
   {Opcode::BALANCE, new BalanceOperation()},
   {Opcode::ORIGIN, new OriginOperation()},

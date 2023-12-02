@@ -6,7 +6,7 @@
 void CallContext::run() {
   while(pc < contract->getBytecodeSize()) {
     // Print the current state
-    std::cout << "\nState at pc: " << pc << std::endl;
+    std::cout << "\nState at contract : " << contract->getAddressString() << "  and pc : " << pc << std::endl;
     std::cout << "  opcode: " << contract->getBytecodeStringAt(pc) << " - " << opcodeToString(contract->getOpcodeAt(pc)) << std::endl;
     std::cout << "  stack: " << stack->toString() << std::endl;
     std::cout << "  memory: " << memory->toString() << std::endl;
