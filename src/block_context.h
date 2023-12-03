@@ -11,7 +11,7 @@ using address = std::array<uint8_t, 20>;
 
 class BlockContext {
 public:
-  BlockContext(): coinbase(), gasLimit(0), timestamp(0), number(0), difficulty(0) {};
+  BlockContext(): coinbase(), gasLimit(0), timestamp(0), number(0), difficulty(0), chainId(0) {};
   BlockContext(address coinbase, uint64_t gasLimit, uint64_t timestamp,
                intx::uint256 number, intx::uint256 difficulty)
       : coinbase(coinbase), gasLimit(gasLimit), timestamp(timestamp),
@@ -30,6 +30,7 @@ public:
   uint64_t getTimestamp() const { return timestamp; }
   intx::uint256 getNumber() const { return number; }
   intx::uint256 getDifficulty() const { return difficulty; }
+  uint64_t getChainId() const { return chainId; }
 
   intx::uint256 getBlockHash() {
     // TODO
@@ -42,6 +43,7 @@ private:
   uint64_t timestamp;
   intx::uint256 number;
   intx::uint256 difficulty;
+  uint64_t chainId;
 
   std::string toHex(uint8_t byte) const {
     std::stringstream ss;

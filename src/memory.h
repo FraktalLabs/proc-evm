@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 
+using bytes = std::basic_string<uint8_t>;
+
 class Memory {
 public:
   Memory();
@@ -17,7 +19,10 @@ public:
 
   uint8_t& operator[](uint64_t index);
   void store32(uint64_t, uint32_t);
+  void store(uint64_t, uint64_t, uint8_t*);
+  void copy(uint64_t, uint64_t, uint64_t);
   uint32_t load32(uint64_t);
+  uint8_t* getPointer(uint64_t);
 
   std::string toString();
 private:

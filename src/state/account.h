@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include <intx/intx.hpp>
+#include <ethash/keccak.h>
 
 using bytes = std::basic_string<uint8_t>;
 
@@ -114,6 +115,9 @@ public:
   intx::uint256 getBalance() const {
     return balance;
   }
+  void setBalance(const intx::uint256& value) {
+    balance = value;
+  }
 
   intx::uint256 getStorage(const intx::uint256& key) const {
     auto it = storage.find(key);
@@ -138,6 +142,19 @@ public:
 
   bytes getCode() const {
     return code;
+  }
+
+  uint64_t getCodeSize() const {
+    return code.size();
+  }
+  uint8_t* getCodePtrAt(uint64_t offset) {
+    return &code[offset];
+  }
+
+  intx::uint256 getCodeHash() {
+    // TODO: Use keccak256?
+    uint8_t* codePtr = getCodePtrAt(0);
+    return intx::be::load<intx::uint256>(ethash_keccak256(codePtr, code.size()));
   }
 
 private:

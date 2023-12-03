@@ -49,6 +49,19 @@ public:
     std::copy(keyBytes, keyBytes + 20, keyArray.begin());
     return getAccount(keyArray);
   }
+  void removeAccount(const address& addr) {
+    state.erase(addr);
+  }
+  void removeAccount(const std::string& addr) {
+    uint8_t keyBytes[20];
+    for (int i = 0; i < 20; i++) {
+      std::string byteStr = addr.substr(i * 2, 2);
+      keyBytes[i] = static_cast<uint8_t>(std::stoi(byteStr, nullptr, 16));
+    }
+    std::array<uint8_t, 20> keyArray;
+    std::copy(keyBytes, keyBytes + 20, keyArray.begin());
+    removeAccount(keyArray);
+  }
 
 private:
   std::map<address, Account> state;

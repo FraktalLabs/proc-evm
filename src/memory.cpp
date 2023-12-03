@@ -79,8 +79,32 @@ void Memory::store32(uint64_t offset, uint32_t value) {
   memory[offset + 3] = (value >> 24) & 0xFF;
 }
 
+void Memory::store(uint64_t offset, uint64_t length, uint8_t* data) {
+  if (offset + length > size) {
+    resize(offset + length);
+  }
+
+  for (uint64_t i = 0; i < length; i++) {
+    memory[offset + i] = data[i];
+  }
+}
+
+void Memory::copy(uint64_t dest, uint64_t src, uint64_t length) {
+  if (dest + length > size) {
+    resize(dest + length);
+  }
+
+  for (uint64_t i = 0; i < length; i++) {
+    memory[dest + i] = memory[src + i];
+  }
+}
+
 uint32_t Memory::load32(uint64_t offset) {
   uint8_t* ptr = &memory[offset];
   uint32_t value = ptr[0] | (ptr[1] << 8) | (ptr[2] << 16) | (ptr[3] << 24);
   return value;
+}
+
+uint8_t* Memory::getPointer(uint64_t offset) {
+  return &memory[offset];
 }

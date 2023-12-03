@@ -20,6 +20,7 @@ public:
 
   const bytes& getBytecode() const { return bytecode; }
   uint8_t getBytecodeAt(uint64_t index) const { return bytecode[index]; }
+  uint8_t* getBytecodePtrAt(uint64_t index) { return &bytecode[index]; }
   uint64_t getBytecodeSize() const { return bytecode.size(); }
   Opcode getOpcodeAt(uint64_t index) const { return static_cast<Opcode>(bytecode[index]); }
 
@@ -33,6 +34,10 @@ public:
 
   std::string getBytecodeStringAt(uint64_t index) {
     return toHex(bytecode[index]);
+  }
+
+  uint64_t getCodeSize() const {
+    return bytecode.size();
   }
 
   address getAddress() const {
