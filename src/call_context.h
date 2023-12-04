@@ -53,6 +53,15 @@ public:
   void setInput(bytes input) { this->input = input; }
   uint256 getInputSize() { return input.size(); }
 
+  void setRet(bytes ret) { this->ret = ret; }
+  std::string getRetString() {
+    std::string result;
+    for (const auto &byte : ret) {
+      result += toHex(byte);
+    }
+    return result;
+  }
+
   bytes getReturnData() { return returnData; }
   uint8_t* getReturnDataPtrAt(uint64_t index) {
     return &returnData.at(index);
@@ -78,13 +87,14 @@ public:
     return result;
   }
 
-  void run(); // TODO: return value?
+  bytes run(); // TODO: return value?
 
 private:
   uint64_t pc;
   // TODO: are these in the correct context
   intx::uint256 value;
   bytes input;
+  bytes ret; // TODO: move to operation?
   bytes returnData;
   uint64_t baseFee;
 

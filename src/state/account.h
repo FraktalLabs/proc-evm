@@ -131,6 +131,10 @@ public:
     storage[key] = value;
   }
 
+  void initAccount(const bytes& bytecode) {
+    code = bytecode;
+  }
+
   void initAccount(const std::string& bytecode) {
     // TODO: Run init code?
     code.clear();
@@ -138,6 +142,10 @@ public:
       code.push_back(fromHex(bytecode.substr(i, 2)));
       ++i;
     }
+  }
+
+  void setCode(const bytes& bytecode) {
+    code = bytecode;
   }
 
   bytes getCode() const {

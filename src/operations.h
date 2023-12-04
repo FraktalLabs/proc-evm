@@ -1168,6 +1168,9 @@ ExecStatus ReturnOperation::execute(CallContext& context) {
   uint256 size = context.getStack()->pop();
 
   // TODO
+  uint8_t* dataStart = context.getMemory()->getPointer(static_cast<uint64_t>(offset));
+  bytes data(dataStart, dataStart + static_cast<uint64_t>(size));
+  context.setRet(data);
 
   return RETURNEXEC;
 }

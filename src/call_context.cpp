@@ -3,7 +3,7 @@
 #include "call_context.h"
 #include "operations.h"
 
-void CallContext::run() {
+bytes CallContext::run() {
   while(pc < contract->getBytecodeSize()) {
     // Print the current state
     std::cout << "\nState at contract : " << contract->getAddressString() << "  and pc : " << pc << std::endl;
@@ -22,11 +22,16 @@ void CallContext::run() {
     std::cout << "  new stack: " << stack->toString() << std::endl;
     std::cout << "  new memory: " << memory->toString() << std::endl;
 
-    if(status == ExecStatus::STOPEXEC) {
+    //TODO : Handle the status & revert?
+    if(status == ExecStatus::STOPEXEC || status == ExecStatus::RETURNEXEC) {
       std::cout << "Received STOP" << std::endl;
       break;
     }
 
     pc++;
   }
+
+  std::cout << "  returning w/ " << getRetString() << std::endl;
+
+  return ret;
 }
