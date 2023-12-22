@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "stack.h"
 
 uint256 Stack::pop() {

@@ -1,9 +1,9 @@
+#include "state.h"
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <array>
-
-#include "state.h"
 
 std::string toHex(uint8_t byte) {
   std::stringstream ss;

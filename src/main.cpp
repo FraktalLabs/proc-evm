@@ -1,13 +1,7 @@
-#include <iostream>
-#include <memory>
 #include <string>
-#include <fstream>
+#include <iostream>
 
-#include "call_context.h"
-#include "state/state.h"
-#include "utils.h"
 #include "cmds/cmds.h"
-#include "rlp.h"
 
 int main(int argc, char *argv[]) {
   const std::string helpMessage = "Usage: " + std::string(argv[0]) + " <subcommand> [options]\n"

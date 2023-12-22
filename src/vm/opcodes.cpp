@@ -1,6 +1,6 @@
-#include <map>
-
 #include "opcodes.h"
+
+#include <map>
 
 std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::STOP, "STOP"},

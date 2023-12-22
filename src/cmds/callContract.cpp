@@ -1,13 +1,11 @@
-#include <string>
-#include <memory>
-
 #include "cmds.h"
-#include "../state/state.h"
-#include "../block_context.h"
-#include "../tx_context.h"
-#include "../call_context.h"
+
+#include "../external/state/state.h"
+#include "../external/block_context.h"
+#include "../external/tx_context.h"
+#include "../vm/call_context.h"
 #include "../contract.h"
-#include "../utils.h"
+#include "../utils/utils.h"
 
 struct CallCodeData {
   std::string snapshotFile;

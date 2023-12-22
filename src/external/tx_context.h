@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <iomanip>
 #include <sstream>
-#include <string>
 #include <vector>
 
 #include <intx/intx.hpp>

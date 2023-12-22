@@ -1,7 +1,6 @@
-#include <cstring>
-
 #include "memory.h"
-#include <iostream>
+
+#include <cstring>
 
 Memory::Memory() {
   size = 0;

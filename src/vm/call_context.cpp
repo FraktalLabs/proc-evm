@@ -1,10 +1,11 @@
+#include "call_context.h"
+
 #include <iostream>
 #include <string>
 
-#include "call_context.h"
 #include "operations.h"
-#include "utils.h"
-#include "rlp.h"
+#include "../utils/utils.h"
+#include "../utils/rlp.h"
 
 bytes CallContext::run() {
   while(pc < contract->getBytecodeSize()) {

@@ -1,7 +1,7 @@
+#include "utils.h"
+
 #include <fstream>
 #include <iomanip>
-
-#include "utils.h"
 
 bytes parseBytecode(const std::string& bytecode) {
   bytes result;
