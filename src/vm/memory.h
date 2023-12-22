@@ -1,9 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
-
-using bytes = std::basic_string<uint8_t>;
+#include "../utils/types.h"
 
 class Memory {
 public:

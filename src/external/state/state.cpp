@@ -1,9 +1,8 @@
-#include <iostream>
+#include "state.h"
+
 #include <fstream>
 #include <string>
 #include <array>
-
-#include "state.h"
 
 std::string toHex(uint8_t byte) {
   std::stringstream ss;
@@ -37,7 +36,6 @@ void State::snapshot(const std::string& filepath) {
 }
 
 void State::restore(const std::string& filepath) {
-  std::cout << "Restoring state from " << filepath << std::endl;
   // Open file for reading
   std::ifstream file(filepath);
   std::string line;
@@ -50,7 +48,6 @@ void State::restore(const std::string& filepath) {
     flattened += line;
   }
   file.close();
-  std::cout << flattened << std::endl;
 
   // Parse flattened json
   // [ { "address": { value } }, { "address": { value } } ]
@@ -70,7 +67,6 @@ void State::restore(const std::string& filepath) {
       bracketCount--;
       if (bracketCount == 0) {
         isItem = false;
-        std::cout << "Item: " << item << std::endl;
 
         std::string key;
         std::string value;
@@ -97,9 +93,6 @@ void State::restore(const std::string& filepath) {
             value += c;
           }
         }
-        std::cout << "Key: " << key << std::endl;
-        std::cout << "Value: " << value << std::endl;
-        std::cout << "Account: " << Account(value).toString() << std::endl;
         uint8_t keyBytes[20];
         for (int i = 0; i < 20; i++) {
           std::string byteStr = key.substr(i * 2, 2);

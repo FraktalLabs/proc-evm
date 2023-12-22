@@ -1,24 +1,22 @@
 #pragma once
 
-#include <string>
 #include <map>
 #include <sstream>
 #include <iomanip>
-#include <iostream>
 
 #include <intx/intx.hpp>
 #include <ethash/keccak.h>
 
-using bytes = std::basic_string<uint8_t>;
+#include "../../utils/types.h"
 
 class Account {
 public:
   Account() : nonce(0), balance(0) {}
   Account(const std::string& serialized): nonce(0), balance(0) {
-    std::cout << "Account serialized: " << serialized << std::endl;
     // Parse the flattened json like
     // {"nonce"123,"balance"3001,"storage"[],"code""6020600052"}
-    for (size_t i = 0; i < serialized.size(); ++i) {
+    size_t i = 0;
+    for (; i < serialized.size(); ++i) {
       if (serialized[i] == '{') {
         continue;
       } else if (serialized[i] == '"') {
@@ -36,7 +34,6 @@ public:
             nonceStr += serialized[i];
           }
           nonce = std::stoull(nonceStr);
-          std::cout << "nonce: " << nonce << std::endl;
         } else if (key == "balance") {
           // Parse balance
           std::string balanceStr;
@@ -44,7 +41,6 @@ public:
             balanceStr += serialized[i];
           }
           balance = intx::from_string<intx::uint256>(balanceStr);
-          std::cout << "balance: " << to_string(balance) << std::endl;
         } else if (key == "storage") {
           // Parse storage
           for (; serialized[i] != '['; ++i) {}
@@ -62,12 +58,10 @@ public:
               valueStr += serialized[i];
             }
             storage[intx::from_string<intx::uint256>(keyStr)] = intx::from_string<intx::uint256>(valueStr);
-            std::cout << "storage[" << keyStr << "] = " << valueStr << std::endl;
             if (serialized[i] == ']') {
               break;
             }
           }
-          std::cout << "storage size: " << storage.size() << std::endl;
         } else if (key == "code") {
           // Parse code
           ++i; // Skip the opening "
@@ -75,7 +69,6 @@ public:
             code.push_back(fromHex(serialized.substr(i, 2)));
             ++i;
           }
-          std::cout << "code size: " << code.size() << std::endl;
         }
       }
     }

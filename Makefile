@@ -1,21 +1,51 @@
-INTX_LIB_PATH?=/home/brandon/workspace/blockchain/FraktalLabs/intx/include
-ETHASH_LIB_PATH?=/home/brandon/workspace/blockchain/FraktalLabs/ethash/include
-ETHASH_LINK_PATH?=/home/brandon/workspace/blockchain/FraktalLabs/ethash/build/lib/keccak/CMakeFiles/keccak.dir/keccak.c.o
-ETHASH_LINK_PATH2?=/home/brandon/workspace/blockchain/FraktalLabs/ethash/build/lib/ethash/CMakeFiles/ethash.dir/ethash.cpp.o
-ETHASH_LINK_PATH3?=/home/brandon/workspace/blockchain/FraktalLabs/ethash/build/lib/ethash/CMakeFiles/ethash.dir/primes.c.o
-ETHASH_LINK_PATH4?=/home/brandon/workspace/blockchain/FraktalLabs/ethash/build/lib/global_context/CMakeFiles/global-context.dir/global_context.cpp.o
+CC := clang++
+# TODO: Remove Wno's
+CPPFLAGS ?= -std=c++20 -Wall -Wno-for-loop-analysis -Wno-unused-variable
 
-all: main
+INTX_PATH ?= ../intx
+ETHASH_PATH ?= ../ethash
+
+INTX_LIB_PATH ?= ${INTX_PATH}/include
+ETHASH_LIB_PATH ?= ${ETHASH_PATH}/include
+ETHASH_LINK_PATHS ?= $(shell find ${ETHASH_PATH}/build/lib -name '*.o')
+
+INC_LIBS := -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH}
+LINK_LIBS := ${ETHASH_LINK_PATHS}
+
+BUILD_DIR := ./builds
+BIN_DIR := ./bin
+SRC_DIR := ./src
+
+SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
+SRCS_WITH_SRC_STRIPPED := $(subst $(SRC_DIR)/,,$(SRCS))
+OBJS := $(SRCS_WITH_SRC_STRIPPED:%=$(BUILD_DIR)/%.o)
+
+all: proc-evm
 
 clean:
-	rm -rf bin/ builds/
+	rm -rf ${BUILD_DIR} ${BIN_DIR}
 
-main:
-	mkdir -p bin/ builds/
-	clang++ -std=c++20 -c src/opcodes.cpp -o builds/opcodes.o
-	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -c src/stack.cpp -o builds/stack.o
-	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -c src/memory.cpp -o builds/memory.o
-	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -c src/call_context.cpp -o builds/call_context.o
-	mkdir -p builds/state/
-	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -c src/state/state.cpp -o builds/state/state.o
-	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} ${ETHASH_LINK_PATH} ${ETHASH_LINK_PATH2} ${ETHASH_LINK_PATH3} ${ETHASH_LINK_PATH4} builds/opcodes.o builds/stack.o builds/memory.o builds/call_context.o builds/state/state.o src/main.cpp -o bin/main
+proc-evm: ${OBJS}
+	mkdir -p ${BIN_DIR}
+	$(CC) $(CPPFLAGS) $(INC_LIBS) $(LINK_LIBS) $(OBJS) -o ${BIN_DIR}/proc-evm
+
+${BUILD_DIR}/%.cpp.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INC_LIBS) -c $< -o $@
+
+TEST_DIR := ./test
+TEST_SNAPSHOT_FILE := ${TEST_DIR}/snapshot.json
+TEST_BLOCK_CONTEXT_FILE := ${TEST_DIR}/blkContext.txt
+TEST_TX_CONTEXT_FILE := ${TEST_DIR}/txContext.txt
+
+run-test:
+	${BIN_DIR}/proc-evm run --snapshotFile ${TEST_SNAPSHOT_FILE} --blockContextFile ${TEST_BLOCK_CONTEXT_FILE} --txContextFile ${TEST_TX_CONTEXT_FILE} --contractCode 600260040160005260206000f3
+
+deploy-test:
+	${BIN_DIR}/proc-evm deploy --snapshotFile ${TEST_SNAPSHOT_FILE} --blockContextFile ${TEST_BLOCK_CONTEXT_FILE} --txContextFile ${TEST_TX_CONTEXT_FILE} --contractCode 6001600201600a55600D6014600039600D6000F3600260040160005260206000F3
+
+deploy-at-test:
+	${BIN_DIR}/proc-evm deployAt --snapshotFile ${TEST_SNAPSHOT_FILE} --blockContextFile ${TEST_BLOCK_CONTEXT_FILE} --txContextFile ${TEST_TX_CONTEXT_FILE} --contractCode 6001600201600a55600D6014600039600D6000F3600260040160005260206000F3 --deployAddress 4200000000000000000000000000000000000aaa
+
+call-test:
+	${BIN_DIR}/proc-evm call --contractAddress 4200000000000000000000000000000000000aaa --snapshotFile ${TEST_SNAPSHOT_FILE} --blockContextFile ${TEST_BLOCK_CONTEXT_FILE} --txContextFile ${TEST_TX_CONTEXT_FILE}

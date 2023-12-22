@@ -1,13 +1,11 @@
 #pragma once
 
-#include <array>
-#include <cstdint>
 #include <iomanip>
 #include <sstream>
 
 #include <intx/intx.hpp>
 
-using address = std::array<uint8_t, 20>;
+#include "../utils/types.h"
 
 class BlockContext {
 public:
@@ -16,6 +14,9 @@ public:
                intx::uint256 number, intx::uint256 difficulty)
       : coinbase(coinbase), gasLimit(gasLimit), timestamp(timestamp),
         number(number), difficulty(difficulty) {}
+  BlockContext(const std::string& blockContextFile) {
+    // TODO
+  }
 
   address getCoinbase() const { return coinbase; }
   std::string getCoinbaseString() const {

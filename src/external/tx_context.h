@@ -1,22 +1,21 @@
 #pragma once
 
-#include <array>
-#include <cstdint>
 #include <iomanip>
 #include <sstream>
-#include <string>
 #include <vector>
 
 #include <intx/intx.hpp>
 
-using bytes = std::basic_string<uint8_t>;
-using address = std::array<uint8_t, 20>;
+#include "../utils/types.h"
 
 class TxContext {
 public:
   TxContext(): origin(), gasPrice() {}
   TxContext(address origin, intx::uint256 gasPrice)
       : origin(origin), gasPrice(gasPrice) {}
+  TxContext(const std::string& txContextFile) {
+    // TODO
+  }
 
   address getOrigin() const { return origin; }
   std::string getOriginString() {

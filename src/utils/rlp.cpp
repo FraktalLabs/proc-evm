@@ -1,11 +1,4 @@
-#pragma once
-
-#include <string>
-
-#include <intx/intx.hpp>
-
-using bytes = std::basic_string<uint8_t>;
-using bytes_view = std::basic_string_view<uint8_t>;
+#include "rlp.h"
 
 template <uint8_t SHORTBASE, uint8_t LONGBASE>
 bytes encode_length(size_t length) {
@@ -43,11 +36,6 @@ bytes encode(uint64_t data) {
 
 bytes wrap_list(const bytes& data) {
   return encode_length<192, 247>(data.size()) + data;
-}
-
-template <typename... Types>
-bytes encode_tuple(const Types&... args) {
-  return wrap_list((encode(args) + ...));
 }
 
 template <typename InputIterator>

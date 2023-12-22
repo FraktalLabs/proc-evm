@@ -1,6 +1,5 @@
 #pragma once
 
-//TODO: pragma once(s) and namespace(s)
 #include <stdint.h>
 #include <string>
 

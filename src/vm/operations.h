@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <map>
 
 #include <ethash/keccak.h>
@@ -679,7 +678,7 @@ ExecStatus Keccak256Operation::execute(CallContext& context) {
   uint256 offset = context.getStack()->pop();
   uint256 length = context.getStack()->peek();
 
-  const auto numWords = ::numWords(static_cast<size_t>(length));
+  // TODO const auto numWords = ::numWords(static_cast<size_t>(length));
   const auto data = length == 0 ? nullptr : context.getMemory()->getPointer(static_cast<size_t>(offset));
 
   length = intx::be::load<uint256>(ethash_keccak256(data, static_cast<size_t>(length)));
@@ -948,7 +947,6 @@ ExecStatus Mstore8Operation::execute(CallContext& context) {
 ExecStatus SloadOperation::execute(CallContext& context) {
   uint256& value = context.getStack()->peek();
   std::string callAddress = context.getContract()->getAddressString();
-  Account* account = context.getState()->getAccount(callAddress);
   uint256 sValue = context.getState()->getAccount(callAddress)->getStorage(value);
   value = sValue;
 
@@ -969,7 +967,6 @@ ExecStatus JumpOperation::execute(CallContext& context) {
   uint256 jumpDest = context.getStack()->pop();
   // TODO: jump to 0?
   if(!(context.getContract()->getBytecodeAt(static_cast<uint64_t>(jumpDest)) == Opcode::JUMPDEST)) {
-    std::cout << "Invalid jump destination at dest : " << to_string(jumpDest, 10) << " operation : " << opcodeToString(context.getContract()->getOpcodeAt(static_cast<uint64_t>(jumpDest))) << std::endl;
     return STOPEXEC;
   }
   context.setPc(static_cast<uint64_t>(jumpDest) - 1); // -1 because pc is incremented after each instruction
@@ -982,7 +979,6 @@ ExecStatus JumpiOperation::execute(CallContext& context) {
   uint256 condition = context.getStack()->pop();
   if (condition != 0) {
     if(!(context.getContract()->getBytecodeAt(static_cast<uint64_t>(jumpDest)) == Opcode::JUMPDEST)) {
-      std::cout << "Invalid jump destination at dest : " << to_string(jumpDest, 10) << " operation : " << opcodeToString(context.getContract()->getOpcodeAt(static_cast<uint64_t>(jumpDest))) << std::endl;
       return STOPEXEC;
     }
     context.setPc(static_cast<uint64_t>(jumpDest) - 1); // -1 because pc is incremented after each instruction
@@ -1156,6 +1152,9 @@ ExecStatus CallcodeOperation::execute(CallContext& context) {
   std::shared_ptr<Contract> contract = std::make_shared<Contract>(bytecode, addressStr);
 
   std::shared_ptr<CallContext> callContext = std::make_shared<CallContext>(contract, 0, state);
+  uint8_t* inputPtr = context.getMemory()->getPointer(static_cast<uint64_t>(inOffset));
+  bytes callArgs(inputPtr, inputPtr + static_cast<uint64_t>(inSize));
+  callContext->setInput(callArgs);
 
   callContext->run();
 
