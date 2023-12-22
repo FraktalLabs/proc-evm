@@ -16,7 +16,8 @@ BIN_DIR := ./bin
 SRC_DIR := ./src
 
 SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
-OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+SRCS_WITH_SRC_STRIPPED := $(subst $(SRC_DIR)/,,$(SRCS))
+OBJS := $(SRCS_WITH_SRC_STRIPPED:%=$(BUILD_DIR)/%.o)
 
 all: proc-evm
 
@@ -27,7 +28,7 @@ proc-evm: ${OBJS}
 	mkdir -p ${BIN_DIR}
 	$(CC) $(CPPFLAGS) $(INC_LIBS) $(LINK_LIBS) $(OBJS) -o ${BIN_DIR}/proc-evm
 
-${BUILD_DIR}/%.cpp.o: %.cpp
+${BUILD_DIR}/%.cpp.o: $(SRC_DIR)/%.cpp
 	mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INC_LIBS) -c $< -o $@
 
