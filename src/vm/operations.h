@@ -678,7 +678,7 @@ ExecStatus Keccak256Operation::execute(CallContext& context) {
   uint256 offset = context.getStack()->pop();
   uint256 length = context.getStack()->peek();
 
-  const auto numWords = ::numWords(static_cast<size_t>(length));
+  // TODO const auto numWords = ::numWords(static_cast<size_t>(length));
   const auto data = length == 0 ? nullptr : context.getMemory()->getPointer(static_cast<size_t>(offset));
 
   length = intx::be::load<uint256>(ethash_keccak256(data, static_cast<size_t>(length)));
@@ -947,7 +947,6 @@ ExecStatus Mstore8Operation::execute(CallContext& context) {
 ExecStatus SloadOperation::execute(CallContext& context) {
   uint256& value = context.getStack()->peek();
   std::string callAddress = context.getContract()->getAddressString();
-  Account* account = context.getState()->getAccount(callAddress);
   uint256 sValue = context.getState()->getAccount(callAddress)->getStorage(value);
   value = sValue;
 

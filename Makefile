@@ -1,5 +1,6 @@
 CC := clang++
-CPPFLAGS ?= -std=c++20 -Wall
+# TODO: Remove Wno's
+CPPFLAGS ?= -std=c++20 -Wall -Wno-for-loop-analysis -Wno-unused-variable
 
 INTX_PATH ?= ../intx
 ETHASH_PATH ?= ../ethash

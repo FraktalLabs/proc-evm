@@ -12,7 +12,7 @@
 class CallContext {
 public:
   CallContext(std::shared_ptr<Contract> contract, uint64_t pc)
-      : contract(contract), pc(pc), value(0), input(), caller() {
+      : pc(pc), value(0), input(), contract(contract), caller() {
     stack = std::make_unique<Stack>();
     memory = std::make_shared<Memory>();
     state = std::make_shared<State>();
@@ -20,14 +20,14 @@ public:
     txContext = std::make_shared<TxContext>();
   }
   CallContext(std::shared_ptr<Contract> contract, uint64_t pc, std::shared_ptr<State> state)
-      : contract(contract), caller(), pc(pc), value(0), input(), state(state) {
+      : pc(pc), value(0), input(), contract(contract), caller(), state(state) {
     stack = std::make_unique<Stack>();
     memory = std::make_shared<Memory>();
     blockContext = std::make_shared<BlockContext>();
     txContext = std::make_shared<TxContext>();
   }
   CallContext(std::shared_ptr<Contract> contract, uint64_t pc, std::shared_ptr<State> state,const std::string& callAddress)
-      : contract(contract), caller(), pc(pc), value(0), input(), state(state) {
+      : pc(pc), value(0), input(), contract(contract), caller(), state(state) {
     contract->setAddress(callAddress);
     stack = std::make_unique<Stack>();
     memory = std::make_shared<Memory>();
@@ -37,7 +37,7 @@ public:
   //TODO: Pass specific context & caller?, value, input
   CallContext(std::shared_ptr<Contract> contract, intx::uint256 value, bytes input, address caller,
               std::shared_ptr<State> state, std::shared_ptr<BlockContext> blockContext, std::shared_ptr<TxContext> txContext)
-    : pc(0), contract(contract), value(value), input(input), caller(caller),
+    : pc(0), value(value), input(input), contract(contract), caller(caller),
       state(state), blockContext(blockContext), txContext(txContext) {
     stack = std::make_unique<Stack>();
     memory = std::make_shared<Memory>();

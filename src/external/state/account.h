@@ -15,7 +15,8 @@ public:
   Account(const std::string& serialized): nonce(0), balance(0) {
     // Parse the flattened json like
     // {"nonce"123,"balance"3001,"storage"[],"code""6020600052"}
-    for (size_t i = 0; i < serialized.size(); ++i) {
+    size_t i = 0;
+    for (; i < serialized.size(); ++i) {
       if (serialized[i] == '{') {
         continue;
       } else if (serialized[i] == '"') {

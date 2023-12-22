@@ -40,10 +40,10 @@ bytes CallContext::deploy() {
   }
   bytes encodedData = encode_tuple(callerBytes, nonce);
   uint8_t* encodedDataPtr = encodedData.data();
-  uint8_t* encodedHash = ethash_keccak256(encodedDataPtr, encodedData.size()).bytes;
+  auto encodedHash = ethash_keccak256(encodedDataPtr, encodedData.size());
 
   // contract address is last 20 bytes of hash
-  bytes contractAddressBytes(encodedHash + 12, encodedHash + 32);
+  bytes contractAddressBytes(encodedHash.bytes + 12, encodedHash.bytes + 32);
   address contractAddress;
   std::string contractAddressStr;
   for (int i = 0; i < 20; i++) {
