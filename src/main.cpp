@@ -5,142 +5,9 @@
 
 #include "call_context.h"
 #include "state/state.h"
+#include "utils.h"
+#include "cmds/cmds.h"
 #include "rlp.h"
-
-using bytes = std::basic_string<uint8_t>;
-
-std::string byteToHex(uint8_t byte) {
-  std::stringstream ss;
-  ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(byte);
-  return ss.str();
-}
-
-
-int runCode(int argc, char *argv[]) {
-
-    std::string snapshotFile;
-    std::shared_ptr<State> state;
-    std::string callAddress;
-    bytes bytecode;
-    std::shared_ptr<Contract> contract;
-    std::shared_ptr<CallContext> context;
-
-    // Parse the command line arguments
-    // Options : --code <bytecode> --state <state>
-    //           --file <code file> --state <state>
-    //           --address <address> --state <state>
-
-    if (argc < 3)
-    {
-      // Use default setup for now
-      snapshotFile = "/home/brandon/workspace/blockchain/FraktalLabs/proc-evm/snapshot.txt";
-      state = std::make_shared<State>(snapshotFile);
-      callAddress = "4200000000000000000000000000000000000000";
-      bytecode = { Opcode::PUSH1, 0x04, Opcode::JUMP, Opcode::STOP, Opcode::JUMPDEST,
-                   Opcode::PUSH1, 0x05, Opcode::PUSH1, 0x12, Opcode::ADD, Opcode::PUSH1, 0x02, Opcode::MUL, Opcode::PUSH1, 0x0a, Opcode::SUB,
-                   Opcode::PUSH1, 0x00, Opcode::MSTORE, Opcode::PUSH1, 0x00, Opcode::MLOAD, Opcode::PUSH2, 0x12, 0x34, Opcode::DUP1, Opcode::DUP3,
-                   Opcode::SSTORE, Opcode::DUP2, Opcode::SLOAD, Opcode::STOP };
-      contract = std::make_shared<Contract>(bytecode);
-      context = std::make_shared<CallContext>(contract, 0, state, callAddress);
-    } else {
-      // TODO: Remove these flags and setup defaults where possible
-      bool stateProvided = false;
-      bool addressProvided = false;
-      bool codeProvided = false;
-
-      // Parse the command line arguments
-      for (int i = 1; i < argc; i++)
-      {
-        std::string arg = argv[i];
-        if (arg == "--code")
-        {
-          // Get the bytecode
-          i++;
-          std::string code = argv[i];
-          for (int j = 0; j < code.size(); j += 2)
-          {
-            std::string byteString = code.substr(j, 2);
-            uint8_t byte = std::stoi(byteString, nullptr, 16);
-            bytecode.push_back(byte);
-          }
-          contract = std::make_shared<Contract>(bytecode);
-          codeProvided = true;
-        } else if (arg == "--file") {
-          // Get the bytecode from a file
-          i++;
-          std::string filename = argv[i];
-          std::ifstream file(filename);
-          std::string code;
-          std::getline(file, code);
-          // TODO: multi-line?
-          for (int j = 0; j < code.size(); j += 2)
-          {
-            std::string byteString = code.substr(j, 2);
-            uint8_t byte = std::stoi(byteString, nullptr, 16);
-            bytecode.push_back(byte);
-          }
-          contract = std::make_shared<Contract>(bytecode);
-          codeProvided = true;
-        } else if (arg == "--state") {
-          // Get the state
-          i++;
-          snapshotFile = argv[i];
-          state = std::make_shared<State>(snapshotFile);
-          stateProvided = true;
-        } else if (arg == "--address") {
-          // Get the call address
-          i++;
-          callAddress = argv[i];
-          addressProvided = true;
-        } else if (arg == "-h") {
-          // Print help
-          std::cout << "Usage: " << argv[0] << " [options]" << std::endl;
-          std::cout << "Options:" << std::endl;
-          std::cout << "  --code <bytecode>    : The contract bytecode to run" << std::endl;
-          std::cout << "  --file <code file>   : The contract bytecode to run from a file" << std::endl;
-          std::cout << "  --state <state file> : The state to run the contract in" << std::endl;
-          std::cout << "  --address <address>  : The address to call the contract with" << std::endl;
-          std::cout << "  -h                   : Print this help message" << std::endl;
-          return 0;
-        } else {
-          std::cout << "Unknown option: " << arg << std::endl;
-          return 1;
-        }
-      }
-      if (!stateProvided)
-      {
-        snapshotFile = "/home/brandon/workspace/blockchain/FraktalLabs/proc-evm/snapshot.txt";
-        state = std::make_shared<State>(snapshotFile);
-        //TODO: default to empty state
-      }
-      if (!addressProvided)
-      {
-        callAddress = "4200000000000000000000000000000000000000";
-      }
-      if (!codeProvided)
-      {
-        bytecode = { Opcode::PUSH1, 0x04, Opcode::JUMP, Opcode::STOP, Opcode::JUMPDEST,
-                     Opcode::PUSH1, 0x05, Opcode::PUSH1, 0x12, Opcode::ADD, Opcode::PUSH1, 0x02, Opcode::MUL, Opcode::PUSH1, 0x0a, Opcode::SUB,
-                     Opcode::PUSH1, 0x00, Opcode::MSTORE, Opcode::PUSH1, 0x00, Opcode::MLOAD, Opcode::PUSH2, 0x12, 0x34, Opcode::DUP1, Opcode::DUP3,
-                     Opcode::SSTORE, Opcode::DUP2, Opcode::SLOAD, Opcode::STOP };
-        contract = std::make_shared<Contract>(bytecode);
-      }
-      context = std::make_shared<CallContext>(contract, 0, state, callAddress);
-    }
-    
-    std::cout << "Contract Bytecode :: " << "size : " <<  context->getContract()->getBytecode().size()
-                                         << " code : " << context->getContract()->getBytecodeString(true) << std::endl;
-
-    // Run the contract
-    context->run();
-
-    // Snapshot the state
-    std::cout << "------ Snapshotting State ------" << std::endl;
-    context->getState()->snapshot(snapshotFile);
-
-    // Quit the game
-    return 0;
-}
 
 void create(const std::string& caller, bytes contractCode, std::shared_ptr<State> state) {
   std::cout << "Creating contract" << std::endl;
@@ -151,7 +18,7 @@ void create(const std::string& caller, bytes contractCode, std::shared_ptr<State
     callerBytes.push_back(caller[i]);
   }
   uint64_t nonce = state->getAccount(caller)->getNonce();
-  bytes encodedData = encode_tuple(callerBytes, nonce);
+  bytes encodedData = encode_tuple<bytes, uint64_t>(callerBytes, nonce);
   uint8_t* encodedDataPtr = encodedData.data();
   uint8_t* encodedHash = ethash_keccak256(encodedDataPtr, encodedData.size()).bytes;
   // contract address is last 20 bytes of hash
@@ -186,91 +53,6 @@ void create(const std::string& caller, bytes contractCode, std::shared_ptr<State
   state->getAccount(contractAddress)->setCode(ret);
 
   // delete encodedHash; // TODO
-}
-
-int deployContract(int argc, char *argv[]) {
-  std::cout << "Deploying contract" << std::endl;
-
-  std::string snapshotFile;
-  std::shared_ptr<State> state;
-  std::string code;
-  bytes bytecode;
-  std::shared_ptr<Contract> contract;
-
-  if (argc < 3) {
-    snapshotFile = "/home/brandon/workspace/blockchain/FraktalLabs/proc-evm/snapshot.txt";
-    state = std::make_shared<State>(snapshotFile);
-    // https://monokh.com/posts/ethereum-contract-creation-bytecode
-    bytecode = { Opcode::PUSH1, 0x01, Opcode::PUSH1, 0x02, Opcode::ADD, Opcode::PUSH1, 0x0a, Opcode::SSTORE,
-                 Opcode::PUSH1, 0x0D, Opcode::PUSH1, 0x14, Opcode::PUSH1, 0x00, Opcode::CODECOPY, Opcode::PUSH1, 0x0D, Opcode::PUSH1, 0x00, Opcode::RETURN,
-                 Opcode::PUSH1, 0x02, Opcode::PUSH1, 0x04, Opcode::ADD, Opcode::PUSH1, 0x00, Opcode::MSTORE,
-                 Opcode::PUSH1, 0x20, Opcode::PUSH1, 0x00, Opcode::RETURN };
-  } else {
-    bool codeProvided = false;
-    bool stateProvided = false;
-    for (int i = 1; i < argc; i++) {
-      std::string arg = argv[i];
-      if (arg == "--code") {
-        // Get the bytecode from the command line
-        i++;
-        code = argv[i];
-        for (int j = 0; j < code.size(); j += 2)
-        {
-          std::string byteString = code.substr(j, 2);
-          uint8_t byte = std::stoi(byteString, nullptr, 16);
-          bytecode.push_back(byte);
-        }
-        codeProvided = true;
-      } else if (arg == "--file") {
-        // Get the bytecode from a file
-        i++;
-        std::string filename = argv[i];
-        std::ifstream file(filename);
-        std::getline(file, code);
-        for (int j = 0; j < code.size(); j += 2)
-        {
-          std::string byteString = code.substr(j, 2);
-          uint8_t byte = std::stoi(byteString, nullptr, 16);
-          bytecode.push_back(byte);
-        }
-        codeProvided = true;
-      } else if (arg == "--state") {
-        // Get the state from a file
-        i++;
-        snapshotFile = argv[i];
-        state = std::make_shared<State>(snapshotFile);
-        stateProvided = true;
-      } else if (arg == "-h") {
-        // Print help
-        std::cout << "Usage: " << argv[0] << " [options]" << std::endl;
-        std::cout << "Options:" << std::endl;
-        std::cout << "  --code <bytecode>    : The contract bytecode to run" << std::endl;
-        std::cout << "  --file <code file>   : The contract bytecode to run from a file" << std::endl;
-        std::cout << "  --state <state file> : The state to run the contract in" << std::endl;
-        std::cout << "  -h                   : Print this help message" << std::endl;
-        return 0;
-      } else {
-        std::cout << "Unknown option: " << arg << std::endl;
-        return 1;
-      }
-    }
-    if (!codeProvided) {
-      std::cout << "No bytecode provided" << std::endl;
-      return 1;
-    }
-    if (!stateProvided) {
-      snapshotFile = "/home/brandon/workspace/blockchain/FraktalLabs/proc-evm/snapshot.txt";
-      state = std::make_shared<State>(snapshotFile);
-    }
-  }
-
-  create("4200000000000000000000000000000000000000", bytecode, state);
-
-  // Snapshot the state
-  std::cout << "------ Snapshotting State ------" << std::endl;
-  state->snapshot(snapshotFile);
-
-  return 0;
 }
 
 int deployAtContract(int argc, char *argv[]) {
@@ -379,6 +161,8 @@ int deployAtContract(int argc, char *argv[]) {
     // Insert the contract into the state
     state->insert(deployAddress, account);
 
+    //TODO: Input variables / values?
+
     // Snapshot the state
     state->snapshot(snapshotFile);
 
@@ -389,6 +173,8 @@ int callContract(int argc, char *argv[]) {
   std::string snapshotFile;
   std::shared_ptr<State> state;
   std::string address;
+  bytes input;
+  bool inputProvided = false;
   //std::string data;
   //std::string value;
   //std::string gas;
@@ -416,6 +202,17 @@ int callContract(int argc, char *argv[]) {
         i++;
         address = argv[i];
         addressProvided = true;
+      } else if (arg == "--input") {
+        // Get the input from the command line
+        i++;
+        std::string inputString = argv[i];
+        for (int j = 0; j < inputString.size(); j += 2)
+        {
+          std::string byteString = inputString.substr(j, 2);
+          uint8_t byte = std::stoi(byteString, nullptr, 16);
+          input.push_back(byte);
+        }
+        inputProvided = true;
       } else if (arg == "-h") {
         std::cout << "Usage: " << argv[0] << " [options]" << std::endl;
         std::cout << "Options:" << std::endl;
@@ -445,6 +242,9 @@ int callContract(int argc, char *argv[]) {
 
   // Create call context
   std::shared_ptr<CallContext> context = std::make_shared<CallContext>(contract, 0, state);
+  if (inputProvided) {
+    context->setInput(input);
+  }
 
   // Run the contract
   context->run();
@@ -456,16 +256,16 @@ int callContract(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
+  const std::string helpMessage = "Usage: " + std::string(argv[0]) + " <subcommand> [options]\n"
+                                  "Subcommands:\n"
+                                  "  run       : Run EVM code\n"
+                                  "  deploy    : Deploy a contract\n"
+                                  "  deploy-at : Deploy a contract at location\n"
+                                  "  call      : Call a contract\n";
 
-  // Parse subcommand : run, deploy, call
   if (argc < 2)
   {
-    std::cout << "Usage: " << argv[0] << " <subcommand> [options]" << std::endl;
-    std::cout << "Subcommands:" << std::endl;
-    std::cout << "  run       : Run EVM code" << std::endl;
-    std::cout << "  deploy    : Deploy a contract" << std::endl;
-    std::cout << "  deploy-at : Deploy a contract at location" << std::endl;
-    std::cout << "  call      : Call a contract" << std::endl;
+    std::cout << helpMessage << std::endl;
     return 0;
   }
 
@@ -479,7 +279,8 @@ int main(int argc, char *argv[]) {
   } else if (subcommand == "call") {
     return callContract(argc, argv);
   } else {
-    std::cout << "Unknown subcommand: " << subcommand << std::endl;
+    std::cout << "Unknown subcommand: " << subcommand << std::endl << std::endl;
+    std::cout << helpMessage << std::endl;
     return 1;
   }
 }

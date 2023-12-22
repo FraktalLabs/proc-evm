@@ -35,6 +35,13 @@ public:
     txContext = std::make_shared<TxContext>();
   }
   //TODO: Pass specific context & caller?, value, input
+  CallContext(std::shared_ptr<Contract> contract, intx::uint256 value, bytes input, address caller,
+              std::shared_ptr<State> state, std::shared_ptr<BlockContext> blockContext, std::shared_ptr<TxContext> txContext)
+    : pc(0), contract(contract), value(value), input(input), caller(caller),
+      state(state), blockContext(blockContext), txContext(txContext) {
+    stack = std::make_unique<Stack>();
+    memory = std::make_shared<Memory>();
+  }
 
   uint64_t getPc() { return pc; }
   void setPc(uint64_t pc) { this->pc = pc; }
@@ -88,6 +95,7 @@ public:
   }
 
   bytes run(); // TODO: return value?
+  bytes deploy(); // TODO: return value?
 
 private:
   uint64_t pc;

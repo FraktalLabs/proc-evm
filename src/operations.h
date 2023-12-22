@@ -1156,6 +1156,9 @@ ExecStatus CallcodeOperation::execute(CallContext& context) {
   std::shared_ptr<Contract> contract = std::make_shared<Contract>(bytecode, addressStr);
 
   std::shared_ptr<CallContext> callContext = std::make_shared<CallContext>(contract, 0, state);
+  uint8_t* inputPtr = context.getMemory()->getPointer(static_cast<uint64_t>(inOffset));
+  bytes callArgs(inputPtr, inputPtr + static_cast<uint64_t>(inSize));
+  callContext->setInput(callArgs);
 
   callContext->run();
 

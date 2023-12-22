@@ -16,6 +16,9 @@ public:
                intx::uint256 number, intx::uint256 difficulty)
       : coinbase(coinbase), gasLimit(gasLimit), timestamp(timestamp),
         number(number), difficulty(difficulty) {}
+  BlockContext(const std::string& blockContextFile) {
+    // TODO
+  }
 
   address getCoinbase() const { return coinbase; }
   std::string getCoinbaseString() const {

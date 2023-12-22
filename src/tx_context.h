@@ -17,6 +17,9 @@ public:
   TxContext(): origin(), gasPrice() {}
   TxContext(address origin, intx::uint256 gasPrice)
       : origin(origin), gasPrice(gasPrice) {}
+  TxContext(const std::string& txContextFile) {
+    // TODO
+  }
 
   address getOrigin() const { return origin; }
   std::string getOriginString() {
