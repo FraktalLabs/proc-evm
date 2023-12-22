@@ -95,3 +95,30 @@ bytes CallContext::deploy() {
   // TODO: check ret data?
   return contractAddressBytes;
 }
+
+// TODO: pass as reference?
+// TODO: Only allow certain authorized addresses to call this or allow during init
+bytes CallContext::deployAt(address contractAddress) {
+  std::string contractAddressStr;
+  bytes contractAddressBytes;
+  for (int i = 0; i < 20; i++) {
+    contractAddressBytes.push_back(contractAddress[i]);
+    contractAddressStr += byteToHex(contractAddressBytes[i]);
+  }
+
+  std::cout << "Deploying Contract at :: " << contractAddressStr << std::endl;
+
+  Account contractAccount;
+  contractAccount.initAccount(this->contract->getBytecode());
+  state->insert(contractAddress, contractAccount);
+
+  std::shared_ptr<CallContext> context = std::make_shared<CallContext>(contract, 0, state, contractAddressStr);
+  bytes ret = run();
+
+  // if no err : set code to ret
+  state->getAccount(contractAddress)->setCode(ret);
+
+  // delete encodedHash; // TODO
+  // TODO: check ret data?
+  return contractAddressBytes;
+}

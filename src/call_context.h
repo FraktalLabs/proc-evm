@@ -96,6 +96,7 @@ public:
 
   bytes run(); // TODO: return value?
   bytes deploy(); // TODO: return value?
+  bytes deployAt(address); // TODO: return value?
 
 private:
   uint64_t pc;

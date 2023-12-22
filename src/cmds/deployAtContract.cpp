@@ -6,7 +6,7 @@
 #include "../contract.h"
 #include "../utils.h"
 
-struct DeployContractData {
+struct DeployAtContractData {
   std::string snapshotFile;
   std::shared_ptr<State> state;
   std::shared_ptr<BlockContext> blockContext;
@@ -14,9 +14,10 @@ struct DeployContractData {
   std::shared_ptr<Contract> contract;
   bytes inputData;
   intx::uint256 value;
+  address contractAddress;
 };
 
-std::unique_ptr<DeployContractData> parseDeployCmdlineArgs(int argc, char *argv[]) {
+std::unique_ptr<DeployAtContractData> parseDeployAtCmdlineArgs(int argc, char *argv[]) {
   // Cmdline Args
   std::string snapshotFile;
   std::string blockContextFile;
@@ -25,18 +26,20 @@ std::unique_ptr<DeployContractData> parseDeployCmdlineArgs(int argc, char *argv[
   std::string contractCode;
   std::string inputData;
   std::string value;
+  std::string deployAddress;
   // TODO: fee stuff
   // TODO: signature
   // TODO: from & to??
 
-  const std::string helpText = "Usage: " + std::string(argv[0]) + " deploy [options]\n"
-                               "  Deploy bytecode as a transaction (acts like normal contract deployment)\n\n"
+  const std::string helpText = "Usage: " + std::string(argv[0]) + " deployAt [options]\n"
+                               "  Deploy bytecode at a specific address (otherwise acts like normal deployment)\n\n"
                                "Options:\n"
                                "  --snapshotFile <file>      Snapshot file (required)\n"
                                "  --blockContextFile <file>  Block context file (required)\n"
                                "  --txContextFile <file>     Transaction context file (required)\n"
                                "  --codeFile <file>          Contract code file (must use either --codeFile or --contractCode)\n"
                                "  --contractCode <code>      Contract code (must use either --codeFile or --contractCode)\n"
+                               "  --deployAddress <address>  Address to deploy contract at (required)\n"
                                "  --inputData <data>         Input data (default: \"\")\n"
                                "  --value <value>            Value (default: 0)\n";
 
@@ -90,6 +93,12 @@ std::unique_ptr<DeployContractData> parseDeployCmdlineArgs(int argc, char *argv[
         exit(1);
       }
       value = argv[++i];
+    } else if(arg == "--deployAddress") {
+      if(i + 1 >= argc) {
+        std::cerr << "Missing argument for --deployAddress\n";
+        exit(1);
+      }
+      deployAddress = argv[++i];
     } else if(arg == "--help") {
       std::cerr << helpText;
       exit(0);
@@ -121,6 +130,12 @@ std::unique_ptr<DeployContractData> parseDeployCmdlineArgs(int argc, char *argv[
 
   if(codeFile.empty() && contractCode.empty()) {
     std::cerr << "Missing required argument --codeFile or --contractCode\n";
+    std::cerr << helpText;
+    exit(1);
+  }
+
+  if(deployAddress.empty()) {
+    std::cerr << "Missing required argument --deployAddress\n";
     std::cerr << helpText;
     exit(1);
   }
@@ -157,20 +172,25 @@ std::unique_ptr<DeployContractData> parseDeployCmdlineArgs(int argc, char *argv[
 
   intx::uint256 valueInt = intx::from_string<intx::uint256>(value);
 
-  return std::make_unique<DeployContractData>(DeployContractData{snapshotFile, state, blockContext, txContext, contract, inputDataBytes, valueInt});
+  bytes contractAddressBytes = parseBytecode(deployAddress);
+  address contractAddress;
+  for(int i = 0; i < 20; i++) {
+    contractAddress[i] = contractAddressBytes[i];
+  }
+
+  return std::make_unique<DeployAtContractData>(DeployAtContractData{snapshotFile, state, blockContext, txContext, contract, inputDataBytes, valueInt, contractAddress});
 }
 
-// TODO: Act like doing call to 0 address
-int deployContract(int argc, char *argv[]) {
+int deployAtContract(int argc, char *argv[]) {
   // TODO: always run as init code?
-  auto data = parseDeployCmdlineArgs(argc, argv);
+  auto data = parseDeployAtCmdlineArgs(argc, argv);
 
   address caller = data->txContext->getOrigin(); // TODO: Is this correct?
   std::shared_ptr<CallContext> callContext =
       std::make_shared<CallContext>(data->contract, data->value, data->inputData, caller,
                                     data->state, data->blockContext, data->txContext);
 
-  auto result = callContext->deploy();
+  auto result = callContext->deployAt(data->contractAddress);
 
   std::cout << "Result: " << bytecodeToHex(result) << "\n";
 

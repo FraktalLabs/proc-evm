@@ -22,11 +22,19 @@ main:
 	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -c src/state/state.cpp -o builds/state/state.o
 	mkdir -p builds/cmds/
 	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -c src/cmds/deployContract.cpp -o builds/cmds/deployContract.o
+	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -c src/cmds/deployAtContract.cpp -o builds/cmds/deployAtContract.o
 	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -c src/cmds/runCode.cpp -o builds/cmds/runCode.o
-	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} ${ETHASH_LINK_PATH} ${ETHASH_LINK_PATH2} ${ETHASH_LINK_PATH3} ${ETHASH_LINK_PATH4} builds/opcodes.o builds/stack.o builds/memory.o builds/call_context.o builds/state/state.o builds/cmds/deployContract.o builds/cmds/runCode.o builds/utils.o builds/rlp.o src/main.cpp -o bin/proc-evm
+	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -c src/cmds/callContract.cpp -o builds/cmds/callContract.o
+	clang++ -std=c++20 -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} ${ETHASH_LINK_PATH} ${ETHASH_LINK_PATH2} ${ETHASH_LINK_PATH3} ${ETHASH_LINK_PATH4} builds/opcodes.o builds/stack.o builds/memory.o builds/call_context.o builds/state/state.o builds/cmds/deployContract.o builds/cmds/deployAtContract.o builds/cmds/runCode.o builds/cmds/callContract.o builds/utils.o builds/rlp.o src/main.cpp -o bin/proc-evm
 
 run-test:
 	./bin/proc-evm run --snapshotFile snapshot.txt --blockContextFile blkContext.txt --txContextFile txContext.txt --contractCode 600260040160005260206000f3
 
 deploy-test:
 	./bin/proc-evm deploy --snapshotFile snapshot.txt --blockContextFile blkContext.txt --txContextFile txContext.txt --contractCode 6001600201600a55600D6014600039600D6000F3600260040160005260206000F3
+
+deploy-at-test:
+	./bin/proc-evm deployAt --snapshotFile snapshot.txt --blockContextFile blkContext.txt --txContextFile txContext.txt --contractCode 6001600201600a55600D6014600039600D6000F3600260040160005260206000F3 --deployAddress 4200000000000000000000000000000000000aaa
+
+call-test:
+	./bin/proc-evm call --contractAddress 4200000000000000000000000000000000000aaa --snapshotFile snapshot.txt --blockContextFile blkContext.txt --txContextFile txContext.txt
