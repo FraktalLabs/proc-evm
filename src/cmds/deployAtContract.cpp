@@ -1,5 +1,7 @@
 #include "cmds.h"
 
+#include <iostream>
+
 #include "../external/state/state.h"
 #include "../external/block_context.h"
 #include "../external/tx_context.h"
@@ -182,20 +184,21 @@ std::unique_ptr<DeployAtContractData> parseDeployAtCmdlineArgs(int argc, char *a
   return std::make_unique<DeployAtContractData>(DeployAtContractData{snapshotFile, state, blockContext, txContext, contract, inputDataBytes, valueInt, contractAddress});
 }
 
-int deployAtContract(int argc, char *argv[]) {
+void deployAtContract(const DeployAtContractData& data) {
+  address caller = data.txContext->getOrigin(); // TODO: Is this correct?
+  std::shared_ptr<CallContext> callContext =
+      std::make_shared<CallContext>(data.contract, data.value, data.inputData, caller,
+                                    data.state, data.blockContext, data.txContext);
+
+  auto result = callContext->deployAt(data.contractAddress);
+}
+
+int deployAtContractCmdline(int argc, char *argv[]) {
   // TODO: always run as init code?
   auto data = parseDeployAtCmdlineArgs(argc, argv);
 
-  address caller = data->txContext->getOrigin(); // TODO: Is this correct?
-  std::shared_ptr<CallContext> callContext =
-      std::make_shared<CallContext>(data->contract, data->value, data->inputData, caller,
-                                    data->state, data->blockContext, data->txContext);
+  deployAtContract(*data);
 
-  auto result = callContext->deployAt(data->contractAddress);
-
-  std::cout << "Result: " << bytecodeToHex(result) << "\n";
-
-  std::cout << "Snapshoting state...\n";
   // TODO: Allow outputing to a different file?
   data->state->snapshot(data->snapshotFile);
 

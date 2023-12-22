@@ -1,13 +1,11 @@
 #pragma once
 
-#include <array>
-#include <cstdint>
 #include <iomanip>
 #include <sstream>
 
 #include <intx/intx.hpp>
 
-using address = std::array<uint8_t, 20>;
+#include "../utils/types.h"
 
 class BlockContext {
 public:

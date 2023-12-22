@@ -1,15 +1,12 @@
 #pragma once
 
-#include <array>
-#include <cstdint>
 #include <iomanip>
 #include <sstream>
 #include <vector>
 
 #include <intx/intx.hpp>
 
-using bytes = std::basic_string<uint8_t>;
-using address = std::array<uint8_t, 20>;
+#include "../utils/types.h"
 
 class TxContext {
 public:

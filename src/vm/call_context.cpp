@@ -1,20 +1,11 @@
 #include "call_context.h"
 
-#include <iostream>
-#include <string>
-
 #include "operations.h"
 #include "../utils/utils.h"
 #include "../utils/rlp.h"
 
 bytes CallContext::run() {
   while(pc < contract->getBytecodeSize()) {
-    // Print the current state
-    std::cout << "\nState at contract : " << contract->getAddressString() << "  and pc : " << pc << std::endl;
-    std::cout << "  opcode: " << contract->getBytecodeStringAt(pc) << " - " << opcodeToString(contract->getOpcodeAt(pc)) << std::endl;
-    std::cout << "  stack: " << stack->toString() << std::endl;
-    std::cout << "  memory: " << memory->toString() << std::endl;
-
     // Get the opcode
     Opcode opcode = contract->getOpcodeAt(pc);
     Operation* operation = getOperation(opcode);
@@ -22,32 +13,22 @@ bytes CallContext::run() {
     // Execute the operation
     ExecStatus status = operation->execute(*this);
 
-    std::cout << "  ---- Executed ----" << std::endl;
-    std::cout << "  new stack: " << stack->toString() << std::endl;
-    std::cout << "  new memory: " << memory->toString() << std::endl;
-
     //TODO : Handle the status & revert?
     if(status == ExecStatus::STOPEXEC || status == ExecStatus::RETURNEXEC) {
-      std::cout << "Received STOP" << std::endl;
       break;
     }
 
     pc++;
   }
 
-  std::cout << "  returning w/ " << getRetString() << std::endl;
-
   return ret;
 }
 
 bytes CallContext::deploy() {
-  std::cout << "Deploying Contract" << std::endl;
-
   Account* callerAccount = state->getAccount(this->caller);
   // TODO: Create a new account if it doesn't exist. Is this the best spot?
   // TODO: Inc nonce in all places needed
   if(callerAccount == nullptr) {
-    std::cout << "Creating new account for caller" << std::endl;
     Account newAccount;
     state->insert(this->caller, newAccount);
     callerAccount = state->getAccount(this->caller);
@@ -75,8 +56,6 @@ bytes CallContext::deploy() {
   // contractHash = statedb.getcodehash(contractAddress)
   // Check if contractHash == empty
   
-  std::cout << "Inserting contract into state :: " << contractAddressStr << std::endl;
-
   // Create account & add to state
   Account contractAccount;
   contractAccount.initAccount(this->contract->getBytecode());
@@ -84,8 +63,6 @@ bytes CallContext::deploy() {
   // TODO: transfer value from caller to contractAddress
   // TODO : missed things
   
-  std::cout << "Deploying Contract Address :: " << contractAddressStr << "  & code : " << this->contract->getBytecode().size() << std::endl;
-
   std::shared_ptr<CallContext> context = std::make_shared<CallContext>(contract, 0, state, contractAddressStr);
   bytes ret = context->run();
 
@@ -106,8 +83,6 @@ bytes CallContext::deployAt(address contractAddress) {
     contractAddressBytes.push_back(contractAddress[i]);
     contractAddressStr += byteToHex(contractAddressBytes[i]);
   }
-
-  std::cout << "Deploying Contract at :: " << contractAddressStr << std::endl;
 
   Account contractAccount;
   contractAccount.initAccount(this->contract->getBytecode());

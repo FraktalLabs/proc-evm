@@ -19,13 +19,13 @@ int main(int argc, char *argv[]) {
 
   std::string subcommand = argv[1];
   if (subcommand == "run") {
-    return runCode(argc, argv);
+    return runCodeCmdline(argc, argv);
   } else if (subcommand == "deploy") {
-    return deployContract(argc, argv);
+    return deployContractCmdline(argc, argv);
   } else if (subcommand == "deployAt") {
-    return deployAtContract(argc, argv);
+    return deployAtContractCmdline(argc, argv);
   } else if (subcommand == "call") {
-    return callContract(argc, argv);
+    return callContractCmdline(argc, argv);
   } else {
     std::cout << "Unknown subcommand: " << subcommand << std::endl << std::endl;
     std::cout << helpMessage << std::endl;

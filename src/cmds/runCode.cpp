@@ -1,5 +1,7 @@
 #include "cmds.h"
 
+#include <iostream>
+
 #include "../external/state/state.h"
 #include "../external/block_context.h"
 #include "../external/tx_context.h"
@@ -161,19 +163,20 @@ std::unique_ptr<RunCodeData> parseRunCmdlineArgs(int argc, char *argv[]) {
   return std::make_unique<RunCodeData>(RunCodeData{snapshotFile, state, blockContext, txContext, contract, inputDataBytes, valueInt});
 }
 
-int runCode(int argc, char *argv[]) {
-  auto data = parseRunCmdlineArgs(argc, argv);
-
-  address caller = data->txContext->getOrigin(); // TODO: Is this correct?
+void runCode(const RunCodeData& data) {
+  address caller = data.txContext->getOrigin(); // TODO: Is this correct?
   std::shared_ptr<CallContext> callContext =
-      std::make_shared<CallContext>(data->contract, data->value, data->inputData, caller,
-                                    data->state, data->blockContext, data->txContext);
+      std::make_shared<CallContext>(data.contract, data.value, data.inputData, caller,
+                                    data.state, data.blockContext, data.txContext);
 
   auto result = callContext->run();
+}
 
-  std::cout << "Result: " << bytecodeToHex(result) << "\n";
+int runCodeCmdline(int argc, char *argv[]) {
+  auto data = parseRunCmdlineArgs(argc, argv);
 
-  std::cout << "Snapshoting state...\n";
+  runCode(*data);
+
   // TODO: Allow outputing to a different file?
   data->state->snapshot(data->snapshotFile);
 

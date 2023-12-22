@@ -1,11 +1,8 @@
 #pragma once
 
-#include <string>
-
 #include <intx/intx.hpp>
 
-using bytes = std::basic_string<uint8_t>;
-using bytes_view = std::basic_string_view<uint8_t>;
+#include "types.h"
 
 template <uint8_t SHORTBASE, uint8_t LONGBASE>
 bytes encode_length(size_t length);

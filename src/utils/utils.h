@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string>
-
-using bytes = std::basic_string<uint8_t>;
+#include "types.h"
 
 bytes parseBytecode(const std::string& bytecode);
 bytes parseBytecodeFile(const std::string& filename);

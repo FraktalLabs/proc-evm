@@ -968,7 +968,6 @@ ExecStatus JumpOperation::execute(CallContext& context) {
   uint256 jumpDest = context.getStack()->pop();
   // TODO: jump to 0?
   if(!(context.getContract()->getBytecodeAt(static_cast<uint64_t>(jumpDest)) == Opcode::JUMPDEST)) {
-    std::cout << "Invalid jump destination at dest : " << to_string(jumpDest, 10) << " operation : " << opcodeToString(context.getContract()->getOpcodeAt(static_cast<uint64_t>(jumpDest))) << std::endl;
     return STOPEXEC;
   }
   context.setPc(static_cast<uint64_t>(jumpDest) - 1); // -1 because pc is incremented after each instruction
@@ -981,7 +980,6 @@ ExecStatus JumpiOperation::execute(CallContext& context) {
   uint256 condition = context.getStack()->pop();
   if (condition != 0) {
     if(!(context.getContract()->getBytecodeAt(static_cast<uint64_t>(jumpDest)) == Opcode::JUMPDEST)) {
-      std::cout << "Invalid jump destination at dest : " << to_string(jumpDest, 10) << " operation : " << opcodeToString(context.getContract()->getOpcodeAt(static_cast<uint64_t>(jumpDest))) << std::endl;
       return STOPEXEC;
     }
     context.setPc(static_cast<uint64_t>(jumpDest) - 1); // -1 because pc is incremented after each instruction

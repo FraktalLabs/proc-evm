@@ -2,12 +2,9 @@
 
 #include <sstream>
 #include <iomanip>
-#include <array>
 
 #include "vm/opcodes.h"
-
-using bytes = std::basic_string<uint8_t>;
-using address = std::array<uint8_t, 20>;
+#include "utils/types.h"
 
 // TODO: Think about using Enum for bytecodes and compress into uint8_t somehow for DA
 

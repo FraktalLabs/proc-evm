@@ -2,11 +2,6 @@
 
 #include "account.h"
 
-#include <array>
-
-//using address = uint8_t[20];
-using address = std::array<uint8_t, 20>;
-
 class State {
 public:
   State() {}
