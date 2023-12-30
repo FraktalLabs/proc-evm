@@ -11,8 +11,7 @@ int main(int argc, char *argv[]) {
                                   "  deployAt  : Deploy a contract at location\n"
                                   "  call      : Call a contract\n";
 
-  if (argc < 2)
-  {
+  if (argc < 2) {
     std::cout << helpMessage << std::endl;
     return 0;
   }

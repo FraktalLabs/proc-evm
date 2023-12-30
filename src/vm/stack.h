@@ -15,6 +15,6 @@ public:
 
   std::string toString();
 private:
-  alignas(sizeof(uint256)) uint256 stack[1024]; // TODO: array or other data structure?
+  alignas(sizeof(uint256)) uint256 stack[1024];
   uint64_t stack_len = 0;
 };

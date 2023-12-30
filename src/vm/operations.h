@@ -10,7 +10,7 @@
 enum ExecStatus {
   CONTINUE,
   RETURNEXEC,
-  STOPEXEC, // TODO: rename to STOP
+  STOPEXEC,
   REVERTEXEC,
 };
 
@@ -19,7 +19,7 @@ public:
   virtual ExecStatus execute(CallContext&) = 0;
 };
 
-using JumpTable = std::map<Opcode, Operation*>; // TODO: use array instead of map since opcodes are contiguous uint8_t?
+using JumpTable = std::map<Opcode, Operation*>;
 
 class StopOperation : public Operation {
 public:

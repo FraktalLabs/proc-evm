@@ -34,7 +34,6 @@ public:
     blockContext = std::make_shared<BlockContext>();
     txContext = std::make_shared<TxContext>();
   }
-  //TODO: Pass specific context & caller?, value, input
   CallContext(std::shared_ptr<Contract> contract, intx::uint256 value, bytes input, address caller,
               std::shared_ptr<State> state, std::shared_ptr<BlockContext> blockContext, std::shared_ptr<TxContext> txContext)
     : pc(0), value(value), input(input), contract(contract), caller(caller),
@@ -79,7 +78,7 @@ public:
   uint64_t getBaseFee() { return baseFee; }
 
   std::shared_ptr<Contract> getContract() { return contract; }
-  std::shared_ptr<Stack> getStack() { return stack; } // TODO?
+  std::shared_ptr<Stack> getStack() { return stack; }
   std::shared_ptr<Memory> getMemory() { return memory; }
   std::shared_ptr<State> getState() { return state; }
   std::shared_ptr<BlockContext> getBlockContext() { return blockContext; }
@@ -94,13 +93,12 @@ public:
     return result;
   }
 
-  bytes run(); // TODO: return value?
-  bytes deploy(); // TODO: return value?
-  bytes deployAt(address); // TODO: return value?
+  bytes run();
+  bytes deploy();
+  bytes deployAt(address);
 
 private:
   uint64_t pc;
-  // TODO: are these in the correct context
   intx::uint256 value;
   bytes input;
   bytes ret; // TODO: move to operation?
@@ -108,8 +106,8 @@ private:
   uint64_t baseFee;
 
   std::shared_ptr<Contract> contract;
-  address caller; // TODO: In contract?
-  std::shared_ptr<Stack> stack; // TODO: shared or unique?
+  address caller;
+  std::shared_ptr<Stack> stack;
   std::shared_ptr<Memory> memory;
   std::shared_ptr<State> state;
 

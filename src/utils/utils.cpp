@@ -22,6 +22,17 @@ bytes parseBytecodeFile(const std::string& filename) {
   return parseBytecode(bytecode);
 }
 
+address parseAddress(const std::string& addr) {
+  address result;
+  for(int i = 0; i < addr.size(); i += 2) {
+    std::string byteString = addr.substr(i, 2);
+    uint8_t byte = std::stoi(byteString, nullptr, 16);
+    result[i / 2] = byte;
+  }
+
+  return result;
+}
+
 std::string byteToHex(uint8_t byte) {
   std::stringstream ss;
   ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(byte);
@@ -32,6 +43,14 @@ std::string bytecodeToHex(const bytes& bytecode) {
   std::stringstream ss;
   for(uint8_t byte : bytecode) {
     ss << byteToHex(byte);
+  }
+  return ss.str();
+}
+
+std::string addressToHex(const address& address) {
+  std::stringstream ss;
+  for (int i = 0; i < 20; i++) {
+    ss << byteToHex(address[i]);
   }
   return ss.str();
 }
