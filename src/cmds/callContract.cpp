@@ -2,12 +2,11 @@
 
 #include <iostream>
 
-#include "../external/state/state.h"
-#include "../external/block_context.h"
-#include "../external/tx_context.h"
 #include "../vm/call_context.h"
-#include "../contract.h"
-#include "../utils/utils.h"
+#include "../vm/contract.h"
+
+#include <evm-cpp-utils/types.h>
+#include <evm-cpp-utils/utils.h>
 
 struct CallCodeData {
   std::string snapshotFile;
@@ -139,7 +138,7 @@ std::unique_ptr<CallCodeData> parseCallCmdlineArgs(int argc, char *argv[]) {
   auto blockContext = std::make_shared<BlockContext>(blockContextFile);
   auto txContext = std::make_shared<TxContext>(txContextFile);
 
-  Account* account = state->getAccount(contractAddressStr);
+  std::shared_ptr<Account> account = state->get(contractAddressStr);
   if(account == nullptr) {
     std::cerr << "Contract does not exist: " << contractAddressStr << "\n";
     exit(1);

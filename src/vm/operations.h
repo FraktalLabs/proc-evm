@@ -696,7 +696,7 @@ ExecStatus AddressOperation::execute(CallContext& context) {
 
 ExecStatus BalanceOperation::execute(CallContext& context) {
   std::string addrStr = context.getContract()->getAddressString();
-  Account* account = context.getState()->getAccount(addrStr);
+  std::shared_ptr<Account> account = context.getState()->get(addrStr);
   uint256 balance = account->getBalance();
   context.getStack()->push(balance);
 
@@ -780,7 +780,7 @@ ExecStatus GaspriceOperation::execute(CallContext& context) {
 ExecStatus ExtcodesizeOperation::execute(CallContext& context) {
   uint256 addr = context.getStack()->pop();
   std::string addrStr = intx::to_string(addr);
-  Account* account = context.getState()->getAccount(addrStr);
+  std::shared_ptr<Account> account = context.getState()->get(addrStr);
   uint256 size = account->getCodeSize();
   context.getStack()->push(size);
 
@@ -794,7 +794,7 @@ ExecStatus ExtcodecopyOperation::execute(CallContext& context) {
   uint256 length = context.getStack()->pop();
 
   std::string addrStr = intx::to_string(addr);
-  Account* account = context.getState()->getAccount(addrStr);
+  std::shared_ptr<Account> account = context.getState()->get(addrStr);
   context.getMemory()->store(static_cast<size_t>(memOffset), static_cast<size_t>(length), account->getCodePtrAt(static_cast<size_t>(codeOffset)));
 
   return CONTINUE;
@@ -820,7 +820,7 @@ ExecStatus ReturndatacopyOperation::execute(CallContext& context) {
 ExecStatus ExtcodehashOperation::execute(CallContext& context) {
   uint256 addr = context.getStack()->pop();
   std::string addrStr = intx::to_string(addr);
-  Account* account = context.getState()->getAccount(addrStr);
+  std::shared_ptr<Account> account = context.getState()->get(addrStr);
   uint256 codeHash = account->getCodeHash();
   context.getStack()->push(codeHash);
 
@@ -882,7 +882,7 @@ ExecStatus ChainidOperation::execute(CallContext& context) {
 
 ExecStatus SelfbalanceOperation::execute(CallContext& context) {
   std::string address = context.getContract()->getAddressString();
-  Account* account = context.getState()->getAccount(address);
+  std::shared_ptr<Account> account = context.getState()->get(address);
   uint256 balance = account->getBalance();
   context.getStack()->push(balance);
 
@@ -947,7 +947,7 @@ ExecStatus Mstore8Operation::execute(CallContext& context) {
 ExecStatus SloadOperation::execute(CallContext& context) {
   uint256& value = context.getStack()->peek();
   std::string callAddress = context.getContract()->getAddressString();
-  uint256 sValue = context.getState()->getAccount(callAddress)->getStorage(value);
+  uint256 sValue = context.getState()->get(callAddress)->getStorage(value);
   value = sValue;
 
   return CONTINUE;
@@ -957,7 +957,7 @@ ExecStatus SstoreOperation::execute(CallContext& context) {
   uint256 key = context.getStack()->pop();
   uint256 value = context.getStack()->pop();
   std::string callAddress = context.getContract()->getAddressString();
-  Account* account = context.getState()->getAccount(callAddress);
+  std::shared_ptr<Account> account = context.getState()->get(callAddress);
   account->setStorage(key, value);
 
   return CONTINUE;
@@ -1120,7 +1120,7 @@ ExecStatus CallOperation::execute(CallContext& context) {
 
   std::shared_ptr<State> state = context.getState();
   std::string addressStr = intx::to_string(to, 16);
-  Account* account = state->getAccount(addressStr);
+  std::shared_ptr<Account> account = state->get(addressStr);
   bytes bytecode = account->getCode();
   std::shared_ptr<Contract> contract = std::make_shared<Contract>(bytecode, addressStr);
 
@@ -1147,7 +1147,7 @@ ExecStatus CallcodeOperation::execute(CallContext& context) {
   
   std::shared_ptr<State> state = context.getState();
   std::string addressStr = intx::to_string(to, 16);
-  Account* account = state->getAccount(addressStr);
+  std::shared_ptr<Account> account = state->get(addressStr);
   bytes bytecode = account->getCode();
   std::shared_ptr<Contract> contract = std::make_shared<Contract>(bytecode, addressStr);
 
@@ -1230,14 +1230,14 @@ ExecStatus SelfdestructOperation::execute(CallContext& context) {
 
   std::shared_ptr<State> state = context.getState();
   std::string addressStr = intx::to_string(beneficiary, 16);
-  Account* beneficiaryAccount = state->getAccount(addressStr);
+  std::shared_ptr<Account> beneficiaryAccount = state->get(addressStr);
 
   std::string addressStr2 = context.getContract()->getAddressString();
-  Account* contractAccount = state->getAccount(addressStr2);
+  std::shared_ptr<Account> contractAccount = state->get(addressStr2);
 
   beneficiaryAccount->setBalance(beneficiaryAccount->getBalance() + contractAccount->getBalance());
   // TODO
-  state->removeAccount(addressStr2);
+  state->remove(addressStr2);
 
   return STOPEXEC;
 }

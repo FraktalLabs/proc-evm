@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../utils/types.h"
+#include <cstdint>
+#include <string>
 
 class Memory {
 public:

@@ -2,12 +2,11 @@
 
 #include <memory>
 
-#include "../contract.h"
+#include "contract.h"
 #include "memory.h"
 #include "stack.h"
-#include "../external/block_context.h"
-#include "../external/tx_context.h"
-#include "../external/state/state.h"
+
+#include <evm-cpp-utils/types.h>
 
 class CallContext {
 public:

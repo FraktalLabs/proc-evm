@@ -4,12 +4,14 @@ CPPFLAGS ?= -std=c++20 -Wall -Wno-for-loop-analysis -Wno-unused-variable
 
 INTX_PATH ?= ../intx
 ETHASH_PATH ?= ../ethash
+EVM_CPP_UTILS ?= ../evm-cpp-utils
 
 INTX_LIB_PATH ?= ${INTX_PATH}/include
 ETHASH_LIB_PATH ?= ${ETHASH_PATH}/include
 ETHASH_LINK_PATHS ?= $(shell find ${ETHASH_PATH}/build/lib -name '*.o')
+EVM_CPP_UTILS_PATH ?= ${EVM_CPP_UTILS}/include
 
-INC_LIBS := -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH}
+INC_LIBS := -I ${INTX_LIB_PATH} -I ${ETHASH_LIB_PATH} -I ${EVM_CPP_UTILS_PATH}
 LINK_LIBS := ${ETHASH_LINK_PATHS}
 
 BUILD_DIR := ./builds

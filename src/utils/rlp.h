@@ -1,8 +1,7 @@
 #pragma once
 
 #include <intx/intx.hpp>
-
-#include "types.h"
+#include <evm-cpp-utils/types.h>
 
 template <uint8_t SHORTBASE, uint8_t LONGBASE>
 bytes encode_length(size_t length);

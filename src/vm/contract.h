@@ -3,8 +3,9 @@
 #include <sstream>
 #include <iomanip>
 
-#include "vm/opcodes.h"
-#include "utils/types.h"
+#include "opcodes.h"
+
+#include <evm-cpp-utils/utils.h>
 
 // TODO: Think about using Enum for bytecodes and compress into uint8_t somehow for DA
 
@@ -23,13 +24,13 @@ public:
   std::string getBytecodeString(bool spaced = false) {
     std::string result;
     for (const auto &byte : bytecode) {
-      result += toHex(byte) + (spaced ? " " : "");
+      result += byteToHex(byte) + (spaced ? " " : "");
     }
     return result;
   }
 
   std::string getBytecodeStringAt(uint64_t index) {
-    return toHex(bytecode[index]);
+    return byteToHex(bytecode[index]);
   }
 
   uint64_t getCodeSize() const {
@@ -43,7 +44,7 @@ public:
   std::string getAddressString() {
     std::string result;
     for (const auto &byte : address) {
-      result += toHex(byte);
+      result += byteToHex(byte);
     }
     return result;
   }
@@ -62,11 +63,4 @@ private:
   // TODO: bytes_view? pointer?
   bytes bytecode;
   address address;
-
-  std::string toHex(uint8_t byte) {
-    std::stringstream ss;
-    ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(byte);
-    return ss.str();
-  }
-
 };

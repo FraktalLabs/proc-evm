@@ -1,7 +1,6 @@
 #include "call_context.h"
 
 #include "operations.h"
-#include "../utils/utils.h"
 #include "../utils/rlp.h"
 
 bytes CallContext::run() {
@@ -25,13 +24,13 @@ bytes CallContext::run() {
 }
 
 bytes CallContext::deploy() {
-  Account* callerAccount = state->getAccount(this->caller);
+  std::shared_ptr<Account> callerAccount = state->get(this->caller);
   // TODO: Create a new account if it doesn't exist. Is this the best spot?
   // TODO: Inc nonce in all places needed
   if(callerAccount == nullptr) {
     Account newAccount;
     state->insert(this->caller, newAccount);
-    callerAccount = state->getAccount(this->caller);
+    callerAccount = state->get(this->caller);
   }
   uint64_t nonce = callerAccount->getNonce(); // TODO: Is this the correct address?
   bytes callerBytes;
@@ -58,7 +57,7 @@ bytes CallContext::deploy() {
   
   // Create account & add to state
   Account contractAccount;
-  contractAccount.initAccount(this->contract->getBytecode());
+  contractAccount.setCode(this->contract->getBytecode());
   state->insert(contractAddress, contractAccount);
   // TODO: transfer value from caller to contractAddress
   // TODO : missed things
@@ -67,7 +66,7 @@ bytes CallContext::deploy() {
   bytes ret = context->run();
 
   // if no err : set code to ret
-  state->getAccount(contractAddress)->setCode(ret);
+  state->get(contractAddress)->setCode(ret);
 
   // delete encodedHash; // TODO
   // TODO: check ret data?
@@ -85,14 +84,14 @@ bytes CallContext::deployAt(address contractAddress) {
   }
 
   Account contractAccount;
-  contractAccount.initAccount(this->contract->getBytecode());
+  contractAccount.setCode(this->contract->getBytecode());
   state->insert(contractAddress, contractAccount);
 
   std::shared_ptr<CallContext> context = std::make_shared<CallContext>(contract, 0, state, contractAddressStr);
   bytes ret = run();
 
   // if no err : set code to ret
-  state->getAccount(contractAddress)->setCode(ret);
+  state->get(contractAddress)->setCode(ret);
 
   // delete encodedHash; // TODO
   // TODO: check ret data?

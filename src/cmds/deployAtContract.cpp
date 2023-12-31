@@ -2,12 +2,11 @@
 
 #include <iostream>
 
-#include "../external/state/state.h"
-#include "../external/block_context.h"
-#include "../external/tx_context.h"
 #include "../vm/call_context.h"
-#include "../contract.h"
-#include "../utils/utils.h"
+#include "../vm/contract.h"
+
+#include <evm-cpp-utils/types.h>
+#include <evm-cpp-utils/utils.h>
 
 struct DeployAtContractData {
   std::string snapshotFile;

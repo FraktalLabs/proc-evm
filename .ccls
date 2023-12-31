@@ -2,3 +2,4 @@ clang++
 %h %cpp -std=c++20
 -I/home/brandon/workspace/blockchain/FraktalLabs/intx/include
 -I/home/brandon/workspace/blockchain/FraktalLabs/ethash/include
+-I/home/brandon/workspace/blockchain/FraktalLabs/evm-cpp-utils/include
