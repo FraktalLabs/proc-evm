@@ -28,8 +28,7 @@ bytes CallContext::deploy() {
   // TODO: Create a new account if it doesn't exist. Is this the best spot?
   // TODO: Inc nonce in all places needed
   if(callerAccount == nullptr) {
-    Account newAccount;
-    state->insert(this->caller, newAccount);
+    state->insert(this->caller, std::make_shared<Account>());
     callerAccount = state->get(this->caller);
   }
   uint64_t nonce = callerAccount->getNonce(); // TODO: Is this the correct address?
@@ -56,8 +55,8 @@ bytes CallContext::deploy() {
   // Check if contractHash == empty
   
   // Create account & add to state
-  Account contractAccount;
-  contractAccount.setCode(this->contract->getBytecode());
+  std::shared_ptr<Account> contractAccount = std::make_shared<Account>();
+  contractAccount->setCode(this->contract->getBytecode());
   state->insert(contractAddress, contractAccount);
   // TODO: transfer value from caller to contractAddress
   // TODO : missed things
@@ -83,8 +82,8 @@ bytes CallContext::deployAt(address contractAddress) {
     contractAddressStr += byteToHex(contractAddressBytes[i]);
   }
 
-  Account contractAccount;
-  contractAccount.setCode(this->contract->getBytecode());
+  std::shared_ptr<Account> contractAccount = std::make_shared<Account>();
+  contractAccount->setCode(this->contract->getBytecode());
   state->insert(contractAddress, contractAccount);
 
   std::shared_ptr<CallContext> context = std::make_shared<CallContext>(contract, 0, state, contractAddressStr);
