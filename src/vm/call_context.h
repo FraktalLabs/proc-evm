@@ -41,6 +41,8 @@ public:
     memory = std::make_shared<Memory>();
   }
 
+  virtual ~CallContext() {}
+
   uint64_t getPc() { return pc; }
   void setPc(uint64_t pc) { this->pc = pc; }
   void incPc() { pc++; }
@@ -78,6 +80,7 @@ public:
 
   std::shared_ptr<Contract> getContract() { return contract; }
   std::shared_ptr<Stack> getStack() { return stack; }
+  void setStack(std::shared_ptr<Stack> stack) { this->stack = stack; }
   std::shared_ptr<Memory> getMemory() { return memory; }
   std::shared_ptr<State> getState() { return state; }
   std::shared_ptr<BlockContext> getBlockContext() { return blockContext; }
@@ -92,7 +95,7 @@ public:
     return result;
   }
 
-  bytes run();
+  virtual bytes run();
   bytes deploy();
   bytes deployAt(address);
 
