@@ -2,6 +2,7 @@
 
 #include <map>
 
+//TODO: To header?
 std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::STOP, "STOP"},
     {Opcode::ADD, "ADD"},
@@ -152,6 +153,9 @@ std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::LOG3, "LOG3"},
     {Opcode::LOG4, "LOG4"},
 
+    {Opcode::EXTENSION, "EXTENSION"},
+    //TODO: Way to use getExtensionOpcodeString() after EXTENSION opcode is parsed when parsing bytecode
+
     {Opcode::CREATE, "CREATE"},
     {Opcode::CALL, "CALL"},
     {Opcode::CALLCODE, "CALLCODE"},
@@ -164,6 +168,12 @@ std::map<Opcode, std::string> opcodeStrings = {
     {Opcode::SELFDESTRUCT, "SELFDESTRUCT"},
 };
 
+std::map<ExtensionOpcode, std::string> extensionOpcodeStrings = {};
+
 std::string opcodeToString(Opcode opcode) {
   return opcodeStrings[opcode];
+};
+
+std::string extensionOpcodeToString(ExtensionOpcode opcode) {
+  return extensionOpcodeStrings[opcode];
 };

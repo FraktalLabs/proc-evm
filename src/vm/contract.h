@@ -20,6 +20,7 @@ public:
   uint8_t* getBytecodePtrAt(uint64_t index) { return &bytecode[index]; }
   uint64_t getBytecodeSize() const { return bytecode.size(); }
   Opcode getOpcodeAt(uint64_t index) const { return static_cast<Opcode>(bytecode[index]); }
+  ExtensionOpcode getExtensionOpcodeAt(uint64_t index) const { return static_cast<ExtensionOpcode>(bytecode[index]); }
 
   std::string getBytecodeString(bool spaced = false) {
     std::string result;

@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <map>
 
 enum Opcode : uint8_t {
   STOP = 0x00,
@@ -154,6 +155,8 @@ enum Opcode : uint8_t {
   LOG3 = 0xa3,
   LOG4 = 0xa4,
 
+  EXTENSION = 0xe0,
+
   CREATE = 0xf0,
   CALL = 0xf1,
   CALLCODE = 0xf2,
@@ -166,4 +169,9 @@ enum Opcode : uint8_t {
   SELFDESTRUCT = 0xff,
 };
 
+using ExtensionOpcode = uint8_t;
+
 std::string opcodeToString(Opcode opcode);
+
+extern std::map<ExtensionOpcode, std::string> extensionOpcodeStrings;
+std::string extensionOpcodeToString(ExtensionOpcode opcode);
