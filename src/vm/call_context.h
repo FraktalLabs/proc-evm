@@ -43,25 +43,25 @@ public:
 
   virtual ~CallContext() {}
 
-  uint64_t getPc() { return pc; }
+  uint64_t getPc() const { return pc; }
   void setPc(uint64_t pc) { this->pc = pc; }
   void incPc() { pc++; }
 
-  intx::uint256 getValue() { return value; }
+  intx::uint256 getValue() const { return value; }
   void setValue(intx::uint256 value) { this->value = value; }
 
-  bytes getInput() { return input; }
-  uint256 getInputAt(uint64_t index) {
+  bytes getInput() const { return input; }
+  uint256 getInputAt(uint64_t index) const {
     return input.at(index);
   }
   uint8_t* getInputPtrAt(uint64_t index) {
     return &input.at(index);
   }
   void setInput(bytes input) { this->input = input; }
-  uint256 getInputSize() { return input.size(); }
+  uint256 getInputSize() const { return input.size(); }
 
   void setRet(bytes ret) { this->ret = ret; }
-  std::string getRetString() {
+  std::string getRetString() const {
     std::string result;
     for (const auto &byte : ret) {
       result += toHex(byte);
@@ -69,14 +69,14 @@ public:
     return result;
   }
 
-  bytes getReturnData() { return returnData; }
+  bytes getReturnData() const { return returnData; }
   uint8_t* getReturnDataPtrAt(uint64_t index) {
     return &returnData.at(index);
   }
-  uint64_t getReturnDataSize() { return returnData.size(); }
+  uint64_t getReturnDataSize() const { return returnData.size(); }
   void setReturnData(bytes returnData) { this->returnData = returnData; }
 
-  uint64_t getBaseFee() { return baseFee; }
+  uint64_t getBaseFee() const { return baseFee; }
 
   std::shared_ptr<Contract> getContract() { return contract; }
   std::shared_ptr<Stack> getStack() { return stack; }
@@ -117,7 +117,7 @@ private:
   std::shared_ptr<TxContext> txContext;
 
 
-  std::string toHex(uint8_t byte) {
+  std::string toHex(uint8_t byte) const {
     std::stringstream ss;
     ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(byte);
     return ss.str();
