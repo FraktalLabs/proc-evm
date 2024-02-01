@@ -63,18 +63,16 @@ std::string Memory::toString() {
   return result;
 }
 
-void Memory::store32(uint64_t offset, uint32_t value) {
+void Memory::store32(uint64_t offset, const intx::uint256& value) {
   //TODO: Move? Check sizing / offsets?
+  // TODO: double on resize? or just add 32?
   //   when does go version resize
-  if (offset + 4 > size) {
-    resize(offset + 4);
+  if (offset + 32 > size) {
+    resize(offset + 32);
   }
 
+  intx::be::unsafe::store(&memory[offset], value);
   // TODO: Endian?
-  memory[offset] = value & 0xFF;
-  memory[offset + 1] = (value >> 8) & 0xFF;
-  memory[offset + 2] = (value >> 16) & 0xFF;
-  memory[offset + 3] = (value >> 24) & 0xFF;
 }
 
 void Memory::store(uint64_t offset, uint64_t length, uint8_t* data) {
@@ -97,10 +95,9 @@ void Memory::copy(uint64_t dest, uint64_t src, uint64_t length) {
   }
 }
 
-uint32_t Memory::load32(uint64_t offset) {
-  uint8_t* ptr = &memory[offset];
-  uint32_t value = ptr[0] | (ptr[1] << 8) | (ptr[2] << 16) | (ptr[3] << 24);
-  return value;
+intx::uint256 Memory::load32(uint64_t offset) {
+  // TODO: check sizing / offsets & do padding
+  return intx::be::unsafe::load<intx::uint256>(&memory[offset]);
 }
 
 uint8_t* Memory::getPointer(uint64_t offset) {

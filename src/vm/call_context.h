@@ -6,6 +6,9 @@
 #include "memory.h"
 #include "stack.h"
 
+#include <iostream>
+#include <string>
+
 #include <evm-cpp-utils/types.h>
 
 class CallContext {
@@ -52,7 +55,16 @@ public:
 
   bytes getInput() const { return input; }
   uint256 getInputAt(uint64_t index) const {
-    return input.at(index);
+    if (index > input.size()) {
+      return 0;
+    }
+
+    bytes in;
+    in.resize(32);
+    for(int i = 0; i < 32 && index + i < input.size(); i++) {
+      in[i] = input[index + i];
+    }
+    return intx::be::unsafe::load<uint256>(in.data());
   }
   uint8_t* getInputPtrAt(uint64_t index) {
     return &input.at(index);

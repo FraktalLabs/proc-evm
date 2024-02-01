@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 
+#include <evm-cpp-utils/types.h>
+
 class Memory {
 public:
   Memory();
@@ -16,10 +18,10 @@ public:
   void clear();
 
   uint8_t& operator[](uint64_t index);
-  void store32(uint64_t, uint32_t);
+  void store32(uint64_t, const intx::uint256&);
   void store(uint64_t, uint64_t, uint8_t*);
   void copy(uint64_t, uint64_t, uint64_t);
-  uint32_t load32(uint64_t);
+  intx::uint256 load32(uint64_t);
   uint8_t* getPointer(uint64_t);
 
   std::string toString();

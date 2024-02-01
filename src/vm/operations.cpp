@@ -229,7 +229,7 @@ ExecStatus SmodOperation::execute(CallContext& context) {
 ExecStatus AddmodOperation::execute(CallContext& context) {
   uint256 x = context.getStack()->pop();
   uint256 y = context.getStack()->pop();
-  uint256 z = context.getStack()->peek();
+  uint256& z = context.getStack()->peek();
   z = z == 0 ? 0 : intx::addmod(x, y, z);
 
   return CONTINUE;
@@ -238,7 +238,7 @@ ExecStatus AddmodOperation::execute(CallContext& context) {
 ExecStatus MulmodOperation::execute(CallContext& context) {
   uint256 x = context.getStack()->pop();
   uint256 y = context.getStack()->pop();
-  uint256 z = context.getStack()->peek();
+  uint256& z = context.getStack()->peek();
   z = z == 0 ? 0 : intx::mulmod(x, y, z);
 
   return CONTINUE;
@@ -392,7 +392,7 @@ inline constexpr int64_t numWords(uint64_t numBytes) noexcept {
 
 ExecStatus Keccak256Operation::execute(CallContext& context) {
   uint256 offset = context.getStack()->pop();
-  uint256 length = context.getStack()->peek();
+  uint256& length = context.getStack()->peek();
 
   // TODO const auto numWords = ::numWords(static_cast<size_t>(length));
   const auto data = length == 0 ? nullptr : context.getMemory()->getPointer(static_cast<size_t>(offset));
@@ -443,7 +443,7 @@ ExecStatus CallvalueOperation::execute(CallContext& context) {
 }
 
 ExecStatus CalldataloadOperation::execute(CallContext& context) {
-  uint256 offset = context.getStack()->peek();
+  uint256& offset = context.getStack()->peek();
 
   // TODO: Check offset range
   offset = context.getInputAt(static_cast<size_t>(offset));
@@ -544,7 +544,7 @@ ExecStatus ExtcodehashOperation::execute(CallContext& context) {
 }
 
 ExecStatus BlockhashOperation::execute(CallContext& context) {
-  uint256 block = context.getStack()->peek();
+  uint256& block = context.getStack()->peek();
   // TODO: Get block data & check range / ...
   //       For now using current block hash
   uint256 blockHash = context.getBlockContext()->getBlockHash();
@@ -613,7 +613,7 @@ ExecStatus BasefeeOperation::execute(CallContext& context) {
 }
 
 ExecStatus BlobhashOperation::execute(CallContext& context) {
-  uint256 idx = context.getStack()->peek();
+  uint256& idx = context.getStack()->peek();
 
   // TODO: check ranges / overflow
   std::string blobHash = context.getTxContext()->getBlobHashString(static_cast<size_t>(idx));
@@ -647,7 +647,7 @@ ExecStatus MloadOperation::execute(CallContext& context) {
 ExecStatus MstoreOperation::execute(CallContext& context) {
   uint256 memStart = context.getStack()->pop();
   uint256 value = context.getStack()->pop();
-  context.getMemory()->store32(static_cast<uint64_t>(memStart), static_cast<uint32_t>(value));
+  context.getMemory()->store32(static_cast<uint64_t>(memStart), value);
 
   return CONTINUE;
 }
